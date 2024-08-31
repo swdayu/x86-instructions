@@ -1,5 +1,5 @@
-x86 寄存器
-===========
+程序执行寄存器
+==============
 
 通用寄存器，段寄存器，指令指针，以及处理器状态寄存器： ::
 
@@ -7,7 +7,7 @@ x86 寄存器
     64位: rax rbx rcx rdx rbp rsi rdi rsp r8  r9  r10  r11  r12  r13  r14  r15
     32位: eax ebx ecx edx ebp esi edi esp r8d r9d r10d r11d r12d r13d r14d r15d
     16位:  ax  bx  cx  dx  bp  si  di  sp r8w r9w r10w r11w r12w r13w r14w r15w
-     8位:  al  bl  cl  dl bpl sil dil spl r8l r9l r10l r11l r12l r13l r14l r15l
+     8位:  al  bl  cl  dl bpl sil dil spl r8b r9b r10b r11b r12b r13b r14b r15b
      8位:  ah  bh  ch  dh
 
     段寄存器
