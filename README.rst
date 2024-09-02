@@ -2,6 +2,7 @@ x86 指令集文档
 
 1. `程序执行寄存器 <a-program-registers.rst>`_
 2. `基本架构和环境 <b-basic-environment.rst>`_
+3. `处理器指令格式 <c-instruction-format.rst>`_
 
 参考链接
 
