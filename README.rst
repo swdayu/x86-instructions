@@ -5,7 +5,7 @@ x86 指令集文档
 3. `处理器指令格式 <c-instruction-format.rst>`_
 4. `操作码映射表 <d-opcode-map-table.rst>`_
 5. `指令编码列表 <e-instruction-encodings.rst>`_
-6. `算术运算指令 <d-arithmetic-instructions.rst>`_
+6. `算术运算指令 <f-arithmetic-instructions.rst>`_
 
 参考链接
 
