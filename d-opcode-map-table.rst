@@ -220,82 +220,82 @@ VEX 前缀指令的操作数大小可以由操作数类型代码确定。128 位
 
     00H ~ F7H
     l/c     |     0     |     1     |     2     |     3     |     4     |     5     |     6     |     7     |
-    0       |ADD                                                                    |PUSH       |POP        |
-                Eb,Gb       Ev,Gv       Gb,Eb       Gv,Ev       AL,Ib       rAX,Iz      ES↑i64      ES↑i64
-    1       |ADC                                                                    |PUSH       |POP        |
-                Eb,Gb       Ev,Gv       Gb,Eb       Gv,Ev       AL,Ib       rAX,Iz      SS↑i64      SS↑i64
-    2       |AND                                                                    |SEG=ES     |DAA↑i64    |
-                Eb,Gb       Ev,Gv       Gb,Eb       Gv,Ev       AL,Ib       rAX,Iz     (Prefix)
-    3       |XOR                                                                    |SEG=SS     |AAA↑i64    |
-                Eb,Gb       Ev,Gv       Gb,Eb       Gv,Ev       AL,Ib       rAX,Iz     (Prefix)
-    4       |INC↑i64 general register / REX↑o64 Prefixes
-                eAX         eCX         eDX         eBX         eSP         eBP         eSI         eDI
-                REX         REX.B       REX.X       REX.XB      REX.R       REX.RB      REX.RX      REX.RXB
-    5       |PUSH↑d64 general register
-                rAX/r8      rCX/r9      rDX/r10     rBX/r11     rSP/r12     rBP/r13     rSI/r14     rDI/r15
-    6       |PUSHA↑i64/ | POPA↑i64/ |BOUND↑i64  |ARPL↑i64   |SEG=FS     |SEG=GS     |Operand Sz |Address Sz
-            PUSHAD↑i64   POPAD↑i64      Gv,Ma       Ew,Gw      (Prefix)    (Prefix)    (Prefix)    (Prefix)
-                                                 MOVSXD↑o64
-                                                    Gv,Ev
-    7       |Jcc↑f64, Jb - Short-displacement jump on condition
-                O           NO         B/NAE/C    NB/AE/NC      Z/E         NZ/NE       BE/NA       NBE/A
-    8       |Immediate Grp 1↑1A                             |TEST                   |XCHG
-              { Eb,Ib       Ev,Iz     Eb,Ib↑i64     Ev,Ib }     Eb,Gb       Ev,Gv       Eb,Gb       Ev,Gv
-    9       |NOP        |XCHG word, dword or qword register with rAX
-            PAUSE(F3)       rCX/r9      rDX/r10     rBX/r11     rSP/r12     rBP/r13     rSI/r14     rDI/r15
-            XCHG r8,rAX
-    A       |MOV                                            |MOVS/B     |MOVS/W/D/Q |CMPS/B     |CMPS/W/D
-                AL,Ob       rAX,Ov      Ob,AL       Ov,rAX      Yb,Xb       Yv,Xv       Xb,Yb       Xv,Yv
-    B       |MOV immediate byte into byte regiter
-             AL/R8B,Ib   CL/R9B,Ib   DL/R10B,Ib  BL/R11B,Ib  AH/R12B,Ib  CH/R13B,Ib  DH/R14B,Ib  BH/R15B,Ib
-    C       |Shift Grp 2↑1A         |near RET↑f64           |LES↑i64    |LDS↑i64    |Grp 11↑1A - MOV
-              { Eb,Ib       Ev,Ib }     Iw                      Gz,Mp       Gz,Mp     { Eb,Ib       Ev,Iz }
-                                                              VEX+2byte   VEX+1byte
-    D       |Shift Grp 2↑1A                                 |AAM↑i64    |AAD↑i64                |XLAT/XLATB
-              { Eb,1        Ev,1        Eb,CL       Ev,CL       Ib          Ib
-    E       |L~PNE↑f64/ |LOOPE↑f64/ |LOOP↑f64   |JrCXZ↑f64  |IN                     |OUT
-            LOOPNZ↑f64   LOOPZ↑f64      Jb          Jb          AL,Ib       eAX,Ib      Ib,AL       Ib,eAX
-                Jb          Jb
-    F       |LOCK       |INT1       |REPNE      |REP/REPE   |HLT        |CMC        |Unary Grp 3↑1A
-              (Prefix)               XACQUIRE    XRELEASE                             { Eb          Ev }
-                                      (Prefix)    (Prefix)
+    0 ----- |ADD                                                                    |PUSH       |POP        |
+            |   Eb,Gb       Ev,Gv       Gb,Eb       Gv,Ev       AL,Ib       rAX,Iz      ES↑i64      ES↑i64
+    1 ----- |ADC                                                                    |PUSH       |POP        |
+            |   Eb,Gb       Ev,Gv       Gb,Eb       Gv,Ev       AL,Ib       rAX,Iz      SS↑i64      SS↑i64
+    2 ----- |AND                                                                    |SEG=ES     |DAA↑i64    |
+            |   Eb,Gb       Ev,Gv       Gb,Eb       Gv,Ev       AL,Ib       rAX,Iz     (Prefix)
+    3 ----- |XOR                                                                    |SEG=SS     |AAA↑i64    |
+            |   Eb,Gb       Ev,Gv       Gb,Eb       Gv,Ev       AL,Ib       rAX,Iz     (Prefix)
+    4 ----- |INC↑i64 general register / REX↑o64 Prefixes
+            |   eAX         eCX         eDX         eBX         eSP         eBP         eSI         eDI
+            |   REX         REX.B       REX.X       REX.XB      REX.R       REX.RB      REX.RX      REX.RXB
+    5 ----- |PUSH↑d64 general register
+            |   rAX/r8      rCX/r9      rDX/r10     rBX/r11     rSP/r12     rBP/r13     rSI/r14     rDI/r15
+    6 ----- |PUSHA↑i64/ | POPA↑i64/ |BOUND↑i64  |ARPL↑i64   |SEG=FS     |SEG=GS     |Operand Sz |Address Sz
+            |PUSHAD↑i64   POPAD↑i64     Gv,Ma       Ew,Gw      (Prefix)    (Prefix)    (Prefix)    (Prefix)
+            |                                    MOVSXD↑o64
+            |                                       Gv,Ev
+    7 ----- |Jcc↑f64, Jb - Short-displacement jump on condition
+            |   O           NO         B/NAE/C    NB/AE/NC      Z/E         NZ/NE       BE/NA       NBE/A
+    8 ----- |Immediate Grp 1↑1A                             |TEST                   |XCHG
+            | { Eb,Ib       Ev,Iz     Eb,Ib↑i64     Ev,Ib }     Eb,Gb       Ev,Gv       Eb,Gb       Ev,Gv
+    9 ----- |NOP        |XCHG word, dword or qword register with rAX
+            |PAUSE(F3)      rCX/r9      rDX/r10     rBX/r11     rSP/r12     rBP/r13     rSI/r14     rDI/r15
+            |XCHG r8,rAX
+    A ----- |MOV                                            |MOVS/B     |MOVS/W/D/Q |CMPS/B     |CMPS/W/D
+            |   AL,Ob       rAX,Ov      Ob,AL       Ov,rAX      Yb,Xb       Yv,Xv       Xb,Yb       Xv,Yv
+    B ----- |MOV immediate byte into byte regiter
+            | AL/R8B,Ib  CL/R9B,Ib   DL/R10B,Ib  BL/R11B,Ib  AH/R12B,Ib  CH/R13B,Ib  DH/R14B,Ib  BH/R15B,Ib
+    C ----- |Shift Grp 2↑1A         |near RET↑f64           |LES↑i64    |LDS↑i64    |Grp 11↑1A - MOV
+            | { Eb,Ib       Ev,Ib }     Iw                      Gz,Mp       Gz,Mp     { Eb,Ib       Ev,Iz }
+            |                                                VEX+2byte   VEX+1byte
+    D ----- |Shift Grp 2↑1A                                 |AAM↑i64    |AAD↑i64                |XLAT/XLATB
+            | { Eb,1        Ev,1        Eb,CL       Ev,CL }     Ib          Ib
+    E ----- |L~PNE↑f64/ |LOOPE↑f64/ |LOOP↑f64   |JrCXZ↑f64  |IN                     |OUT
+            |LOOPNZ↑f64  LOOPZ↑f64      Jb          Jb          AL,Ib       eAX,Ib      Ib,AL       Ib,eAX
+            |   Jb          Jb
+    F ----- |LOCK       |INT1       |REPNE      |REP/REPE   |HLT        |CMC        |Unary Grp 3↑1A
+            | (Prefix)               XACQUIRE    XRELEASE                             { Eb          Ev }
+            |                        (Prefix)    (Prefix)
 
     08H ~ FFH
     l/c     |     8     |     9     |     A     |     B     |     C     |     D     |     E     |     F     |
-    0       |OR                                                                     |PUSH       |2-byte ESC
+    0 ----- |OR                                                                     |PUSH       |2-byte ESC
             |   Eb,Gb       Ev,Gv       Gb,Eb       Gv,Ev       AL,Ib       rAx,Iz      CS↑i64      表-3
-    1       |SBB                                                                    |PUSH       |POP
-                Eb,Gb       Ev,Gv       Gb,Eb       Gv,Ev       AL,Ib       rAX,Iz      DS↑i64      DS↑i64
-    2       |SUB                                                                    |SEG=CS     |DAS↑i64
-                Eb,Gb       Ev,Gv       Gb,Eb       Gv,Ev       AL,Ib       rAX,Iz     (Prefix)
-    3       |CMP                                                                    |SEG=DS     |AAS↑i64
-                Eb,Gb       Ev,Gv       Gb,Eb       Gv,Ev       AL,Ib       rAX,Iz     (Prefix)
-    4       |DEC↑i64 general register / REX↑o64 Prefixes
-                eAX         eCX         eDX         eBX         eSP         eBP         eSI         eDI
-                REX.W       REX.WB      REX.WX      REX.WXB     REX.WR      REX.WRB     REX.WRX     REX.WRXB
-    5       |POP↑d64 into general register
-                rAX/r8      rCX/r9      rDX/r10     rBX/r11     rSP/r12     rBP/r13     rSI/r14     rDI/r15
-    6       |PUSH↑d64   |IMUL       |PUSH↑d64   |IMUL       |INS/INSB   |INS/INSW/D |OUTS/OUTSB |OUTS/SW/SD
-                Iz        Gv,Ev,Iz      Ib        Gv,Ev,Ib      Yb,DX       Yz,DX       DX,Xb       DX,Xz
-    7       |Jcc↑f64, Jb - Short displacement jump on condition
-                S           NS          P/PE        NP/PO       L/NGE       NL/GE       LE/NG       NLE/G
-    8       |MOV                                            |MOV        |LEA        |MOV        |Grp 1A↑1A POP↑d64
-                Eb,Gb       Ev,Gv       Gb,Eb       Gv,Ev       Ev,Sw       Gv,M        Sw,Ew      { Ev }
-    9       |CBW/CWDE/  |CWD/CDQ/CQO|far CALL↑i64|FWAIT/WAIT|PUSHF/D/   |POPF/D/    |SAHF       |LAHF
-             CDQE                                            Q↑d64       Q↑d64
-                                        Ap                      Fv          Fv
-    A       |TEST                   |STOS/B     |STOS/W/D/Q |LODS/B     |LODS/W/D/Q |SCAS/B     |SCAS/W/D/Q
-                AL,Ib       rAX,Iz      Yb,AL       Yv,rAX      AL,Xb       rAX,Xv      AL,Yb       rAX,Yv
-    B       |MOV immediate word or double into word, double, or quad register
-             rAX/r8,Iv   rCX/r9,Iv   rDX/r10,Iv  rBX/r11,Iv  rSP/r12,Iv  rBP/r13,Iv  rSI/r14,Iv  rDI/r15,Iv
-    C       |ENTER      |LEAVE↑d64  |far RET    |far RET    |INT3       |INT        |INTO↑i64   |IRET/D/Q
-                Iw,Ib                   Iw                                  Ib
-    D       |ESC (Escape to coprocessor instruction set)
-    E       |near CALL↑f64|JMP                              |IN                     |OUT
-                Jz         near↑f64   far↑f64   short↑f64       AL,DX       eAX,DX      DX,AL       DX,eAX
-                            Jz          Ap          Jb
-    F       |CLC        |STC        |CLI        |STI        |CLD        |STD        |INC/DEC    |INC/DEC
-                                                                                     Grp 4↑1A    Grp 5↑1A
+    1 ----- |SBB                                                                    |PUSH       |POP
+            |   Eb,Gb       Ev,Gv       Gb,Eb       Gv,Ev       AL,Ib       rAX,Iz      DS↑i64      DS↑i64
+    2 ----- |SUB                                                                    |SEG=CS     |DAS↑i64
+            |   Eb,Gb       Ev,Gv       Gb,Eb       Gv,Ev       AL,Ib       rAX,Iz     (Prefix)
+    3 ----- |CMP                                                                    |SEG=DS     |AAS↑i64
+            |   Eb,Gb       Ev,Gv       Gb,Eb       Gv,Ev       AL,Ib       rAX,Iz     (Prefix)
+    4 ----- |DEC↑i64 general register / REX↑o64 Prefixes
+            |   eAX         eCX         eDX         eBX         eSP         eBP         eSI         eDI
+            |   REX.W       REX.WB      REX.WX      REX.WXB     REX.WR      REX.WRB     REX.WRX     REX.WRXB
+    5 ----- |POP↑d64 into general register
+            |   rAX/r8      rCX/r9      rDX/r10     rBX/r11     rSP/r12     rBP/r13     rSI/r14     rDI/r15
+    6 ----- |PUSH↑d64   |IMUL       |PUSH↑d64   |IMUL       |INS/INSB   |INS/INSW/D |OUTS/OUTSB |OUTS/SW/SD
+            |   Iz        Gv,Ev,Iz      Ib        Gv,Ev,Ib      Yb,DX       Yz,DX       DX,Xb       DX,Xz
+    7 ----- |Jcc↑f64, Jb - Short displacement jump on condition
+            |   S           NS          P/PE        NP/PO       L/NGE       NL/GE       LE/NG       NLE/G
+    8 ----- |MOV                                            |MOV        |LEA        |MOV        |Grp 1A↑1A POP↑d64
+            |   Eb,Gb       Ev,Gv       Gb,Eb       Gv,Ev       Ev,Sw       Gv,M        Sw,Ew      { Ev }
+    9 ----- |CBW/CWDE/  |CWD/CDQ/CQO|far CALL↑i64|FWAIT/WAIT|PUSHF/D/   |POPF/D/    |SAHF       |LAHF
+            |CDQE                                            Q↑d64       Q↑d64
+            |                           Ap                      Fv          Fv
+    A ----- |TEST                   |STOS/B     |STOS/W/D/Q |LODS/B     |LODS/W/D/Q |SCAS/B     |SCAS/W/D/Q
+            |   AL,Ib       rAX,Iz      Yb,AL       Yv,rAX      AL,Xb       rAX,Xv      AL,Yb       rAX,Yv
+    B ----- |MOV immediate word or double into word, double, or quad register
+            | rAX/r8,Iv  rCX/r9,Iv   rDX/r10,Iv  rBX/r11,Iv  rSP/r12,Iv  rBP/r13,Iv  rSI/r14,Iv  rDI/r15,Iv
+    C ----- |ENTER      |LEAVE↑d64  |far RET    |far RET    |INT3       |INT        |INTO↑i64   |IRET/D/Q
+            |   Iw,Ib                   Iw                                  Ib
+    D ----- |ESC (Escape to coprocessor instruction set)
+    E ----- |near CALL↑f64|JMP                              |IN                     |OUT
+            |   Jz         near↑f64   far↑f64   short↑f64       AL,DX       eAX,DX      DX,AL       DX,eAX
+            |               Jz          Ap          Jb
+    F ----- |CLC        |STC        |CLI        |STI        |CLD        |STD        |INC/DEC    |INC/DEC
+            |                                                                        Grp 4↑1A    Grp 5↑1A
 
 双字节操作码
 -------------
@@ -487,8 +487,8 @@ VEX 前缀指令的操作数大小可以由操作数类型代码确定。128 位
 表-4和表-5中显示的三字节操作码映射包括长度为 3 或 4 字节的主操作码。长度为三字节的主操
 作码以两个转义字节 0F38H 或 0F3AH 开始。第三个操作码字节的高四位和低四位用于在表-4或
 表-5中索引特定的行和列。长度为四字节的三字节操作码以强制性前缀（66H、F2H 或 F3H）和两个
-转义字节（0F38H 或 0F3AH）开始。第四个字节的高四位和低四位用于在表-4或表-5 中索引特定
-的行和列。
+转义字节（0F38H 或 0F3AH）开始。第四个字节的高四位和低四位用于在表-4或表-5中索引特定的
+行和列。
 
 映射表中对应指令的每个条目，主要操作码之后跟随的字节的规则如下：
 
@@ -505,3 +505,239 @@ VEX 前缀指令的操作数大小可以由操作数类型代码确定。128 位
   指定一个寄存器，r/m 表明第二个操作数是 XMM1。
 - 最后一个字节是立即数字节（08H）。
 - 通过这种分解，该操作码代表指令：PALIGNR XMM0, XMM1, 8。
+
+表-4：三字节操作码映射表（前两个字节为 0FH 38H） ::
+
+    00H ~ F7H
+    l/c pfx |     0     |     1     |     2     |     3     |     4     |     5     |     6     |     7     |
+    0 ----- |pshufb     |phaddw     |phaddd     |phaddsw    |pmaddubsw  |phsubw     |phsubd     |phsubsw
+            |   Pq,Qq       Pq,Qq       Pq,Qq       Pq,Qq       Pq,Qq       Pq,Qq       Pq,Qq       Pq,Qq
+        66  |vpshufb    |vphaddw    |vphaddd    |vphaddsw   |vpmaddubsw |vphsubw    |vphsubd    |vphsubsw
+            | Vx,Hx,Wx    Vx,Hx,Wx    Vx,Hx,Wx    Vx,Hx,Wx    Vx,Hx,Wx    Vx,Hx,Wx    Vx,Hx,Wx    Vx,Hx,Wx
+    1   66  |pblendvb                           |vcvtph2ps↑v|blendvps   |blendvpd   |vpermps↑v  |vptest
+            | Vdq,Wdq                             Vx,Wx,Ib    Vdq,Wdq     Vdq,Wdq    Vqq,Hqq,Wqq    Vx,Wx
+    2   66  |vpmovsxbw  |vpmovsxbd  |vpmovsxbq  |vpmovsxwd  |vpmovsxwq  |vpmovsxdq
+            | Vx,Ux/Mq    Vx,Ux/Md    Vx,Ux/Mw    Vx,Ux/Mq    Vx,Ux/Md    Vx,Ux/Mq
+    3   66  |vpmovzxbw  |vpmovzxbd  |vpmovzxbq  |vpmovzxwd  |vpmovzxwq  |vpmovzxdq  |vpermd↑v   |vpcmpgtq
+            | Vx,Ux/Mq    Vx,Ux/Md    Vx,Ux/Mw    Vx,Ux/Mq    Vx,Ux/Md    Vx,Ux/Mq   Vqq,Hqq,Wqq  Vx,Hx,Wx
+    4   66  |vpmulld    |vphminposuw                                    |vpsrlvd/q↑v|vpsravd↑v  |vpsllvd/q↑v
+            | Vx,Hx,Wx    Vdq,Wdq                                         Vx,Hx,Wx    Vx,Hx,Wx    Vx,Hx,Wx
+    5 ----- |
+    6 ----- |
+    7 ----- |
+    8   66  |INVEPT     |INVVPID    |INVPCID
+            |   Gy,Mdq      Gy,Mdq      Gy,Mdq
+    9   66  |vgatherdd/q↑v|~qd/q↑v  |~dps/d↑v   |~qps/d↑v                           |vfmaddsub132ps/d↑v|vfmsubadd132ps/d↑v
+            |   Vx,Hx,Wx    Vx,Hx,Wx  Vx,Hx,Wx    Vx,Hx,Wx                              Vx,Hx,Wx         Vx,Hx,Wx
+    A   66  |                                                                       |vfmaddsub213ps/d↑v|vfmsubadd213ps/d↑v
+            |                                                                           Vx,Hx,Wx         Vx,Hx,Wx
+    B   66  |                                                                       |vfmaddsub231ps/d↑v|vfmsubadd231ps/d↑v
+            |                                                                           Vx,Hx,Wx         Vx,Hx,Wx
+    C ----- |
+    D ----- |
+    E ----- |
+    F ----- |MOVBE      |MOVBE      |ANDN↑v     |Grp 17↑1A  |           |BZHI↑v                 |BEXTR↑v
+            |   Gy,My       My,Gy     Gy,By,Ey  |           |             Gy,Ey,By                Gy,Ey,By
+        66  |MOVBE      |MOVBE                  |           |                       |ADCX       |SHLX↑v
+            |   Gw,Mw       Mw,Gw               |           |                           Gy,Ey     Gy,Ey,By
+        F3  |                                   |           |           |PEXT↑v     |ADOX       |SARX↑v
+            |                                   |           |             Gy,By,Ey      Gy,Ey     Gy,Ey,By
+        F2  |CRC32      |CRC32                  |           |           |PDEP↑v     |MULX↑v     |SHRX↑v
+            |   Gd,Eb       Gd,Ey               |           |             Gy,By,Ey   By,Gy,rDX,Ey Gy,Ey,By
+        66& |CRC32      |CRC32                  |           |
+        F2  |   Gd,Eb       Gd,Ew               |           |
+
+    08H ~ FFH
+    l/c pfx |     8     |     9     |     A     |     B     |     C     |     D     |     E     |     F     |
+    0 ----- |psignb     |psignw     |psignd     |pmulhrsw
+            |   Pq,Qq       Pq,Qq       Pq,Qq       Pq,Qq
+        66  |vpsignb    |vpsignw    |vpsignd    |vpmulhrsw  |vpermilps↑v|vpermilpd↑v|vtestps↑v  |vtestpd↑v
+            | Vx,Hx,Wx    Vx,Hx,Wx    Vx,Hx,Wx    Vx,Hx,Wx    Vx,Hx,Wx    Vx,Hx,Wx      Vx,Wx       Vx,Wx
+    1 ----- |                                               |pabsb      |pabsw      |pabsd
+            |                                                   Pq,Qq       Pq,Qq       Pq,Qq
+        66  |vbroadcastss↑v|~sd↑v   |~f128↑v                |vpabsb     |vpabsw     |vpabsd
+            |   Vx,Wd       Vqq,Wq    Vqq,Mdq                   Vx,Wx       Vx,Wx       Vx,Wx
+    2   66  |vpmuldq    |vpcmpeqq   |vmovntdqa  |vpackusdw  |vmaskmovps↑v|~pd↑v     |vmaskmovps↑v|~pd↑v
+            | Vx,Hx,Wx    Vx,Hx,Wx    Vx,Wx       Vx,Hx,Wx    Vx,Hx,Mx     Vx,Hx,Mx   Mx,Hx,Vx     Mx,Hx,Vx
+    3   66  |vpminsb    |vpminsd    |vpminuw    |vpminud    |vpmaxsb    |vpmaxsd    |vpmaxuw    |vpmaxud
+            | Vx,Hx,Wx    Vx,Hx,Wx    Vx,Hx,Wx    Vx,Hx,Wx    Vx,Hx,Wx    Vx,Hx,Wx    Vx,Hx,Wx    Vx,Hx,Wx
+    4 ----- |
+    5   66  |vpbroadcastd↑v|~q↑v    |vbroadcasti128↑v
+            |   Vx,Wx       Vx,Wx       Vqq,Mdq
+    6 ----- |
+    7   66  |vpbroadcastb↑v|~w↑v
+            |   Vx,Wx       Vx,Wx
+    8   66  |                                               |vpmaskmovd/q↑v         |vpmaskmovd/q↑v
+            |                                                 Vx,Hx,Mx                Mx,Vx,Hx
+    9   66  |vfmadd132ps/d↑v|~ss/d↑v|vfmsub132ps/d↑v|~ss/d↑v|vfnmadd132ps/d↑v|~ss/d↑v|vfnmsub132ps/d↑v|~ss/d↑v
+            | Vx,Hx,Wx      Vx,Hx,Wx  Vx,Hx,Wx      Vx,Hx,Wx  Vx,Hx,Wx       Vx,Hx,Wx  Vx,Hx,Wx       Vx,Hx,Wx
+    A   66  |vfmadd213ps/d↑v|~ss/d↑v|vfmsub213ps/d↑v|~ss/d↑v|vfnmadd213ps/d↑v|~ss/d↑v|vfnmsub213ps/d↑v|~ss/d↑v
+            | Vx,Hx,Wx      Vx,Hx,Wx  Vx,Hx,Wx      Vx,Hx,Wx  Vx,Hx,Wx       Vx,Hx,Wx  Vx,Hx,Wx       Vx,Hx,Wx
+    B   66  |vfmadd231ps/d↑v|~ss/d↑v|vfmsub231ps/d↑v|~ss/d↑v|vfnmadd231ps/d↑v|~ss/d↑v|vfnmsub231ps/d↑v|~ss/d↑v
+            | Vx,Hx,Wx      Vx,Hx,Wx  Vx,Hx,Wx      Vx,Hx,Wx  Vx,Hx,Wx       Vx,Hx,Wx  Vx,Hx,Wx       Vx,Hx,Wx
+    C ----- |sha1nexte  |sha1msg1   |sha1msg2   |sha256rnds2|sha256msg1 |sha256msg2
+            |   Vdq,Wdq     Vdq,Wdq     Vdq,Wdq     Vdq,Wdq     Vdq,Wdq     Vdq,Wdq
+        66  |
+    D   66  |                                   |VAESIMC    |VAESENC    |VAESENCLAST|VAESDEC    |VAESDECLAST
+            |                                       Vdq,Wdq  Vdq,Hdq,Wdq Vdq,Hdq,Wdq Vdq,Hdq,Wdq Vdq,Hdq,Wdq
+    E ----- |
+    F ----- |
+        66  |
+        F3  |
+        F2  |
+     66 & F2|
+
+表-5：三字节操作码映射表（前两个字节为 0FH 3AH） ::
+
+    00H ~ F7H
+    l/c pfx |     0     |     1     |     2     |     3     |     4     |     5     |     6     |     7     |
+    0   66  |vpermq↑v   |vpermpd↑v  |vpblendd↑v             |vpermilps↑v|vpermilpd↑v|vperm2f128↑v
+            | Vqq,Wqq,Ib  Vqq,Wqq,Ib  Vx,Hx,Wx,Ib             Vx,Wx,Ib    Vx,Wx,Ib    Vqq,Hqq,Wqq,Ib
+    1   66  |                                               |vpextrb    |vpextrw    |vpextrd/q  |vextractps
+            |                                               Rd/Mb,Vdq,Ib Rd/Mw,Vdq,Ib Ey,Vdq,Ib   Ed,Vdq,Ib
+    2   66  |vpinsrb    |vinsertps  |vpinsrd/q
+            | Vdq,Hdq,    Vdq,Hdq,    Vdq,Hdq,
+            | Ry/Mb,Ib    Udq/Md,Ib   Ey,Ib
+    3 ----- |
+    4   66  |vdpps      |vdppd      |vmpsadbw               |vpclmulqdq             |vperm2i128↑v
+            |Vx,Hx,Wx,Ib Vdq,Hdq,Wdq,Ib Vx,Hx,Wx,Ib           Vdq,Hdq,Wdq,Ib          Vqq,Hqq,Wqq,Ib
+    5 ----- |
+    6   66  |vpcmpestrm |vpcmpestri |vpcmpistrm |vpcmpistri
+            | Vdq,Wdq,Ib  Vdq,Wdq,Ib  Vdq,Wdq,Ib  Vdq,Wdq,Ib
+    7 ----- |
+    8 ----- |
+    9 ----- |
+    A ----- |
+    B ----- |
+    C ----- |
+    D ----- |
+    E ----- |
+    F   F2  |RORX↑v
+            | Gy,Ey,Ib
+
+    08H ~ FFH
+    l/c pfx |     8     |     9     |     A     |     B     |     C     |     D     |     E     |     F     |
+    0 ----- |                                                                                   |palignr
+            |                                                                                     Pq,Qq,Ib
+        66  |vroundps   |vroundpd   |vroundss   |vroundsd   |vblendps   |vblendpd   |vpblendw   |vpalignr
+            | Vx,Wx,Ib    Vx,Wx,Ib    Vss,Wss,Ib  Vsd,Wsd,Ib  Vx,Hx,Wx,Ib Vx,Hx,Wx,Ib Vx,Hx,Wx,Ib Vx,Hx,Wx,Ib
+    1   66  |vinsertf128↑v|vextractf128↑v                               |vcvtps2ph↑v
+            |Vqq,Hqq,Wqq,Ib Wdq,Vqq,Ib                                    Wx,Vx,Ib
+    2 ----- |
+    3   66  |vinserti128↑v|vextracti128↑v
+            |Vqq,Hqq,Wqq,Ib Wdq,Vqq,Ib
+    4   66  |                       |vblendvps↑v|vblendvpd↑v|vpblendvb↑v
+            |                         Vx,Hx,Wx,Lx Vx,Hx,Wx,Lx Vx,Hx,Wx,Lx
+    5 ----- |
+    6 ----- |
+    7 ----- |
+    8 ----- |
+    9 ----- |
+    A ----- |
+    B ----- |
+    C ----- |                                               |sha1rnds4
+            |                                                 Vdq,Wdq,Ib
+    D   66  |                                                                                   |VAESKEYGEN
+            |                                                                                     Vdq,Wdq,Ib
+    E ----- |
+    F ----- |
+
+操作码扩展
+----------
+
+一些一字节和双字节操作码使用 ModR/M 字节中的 reg/opcode（比特 5 ~ 3）字段进行扩展。这
+些操作码在表-6中展示并按组编号。组编号（第二列中的 1 到 16）提供了一个表格入口点。每个指
+令的 r/m 字段编码可以使用表格第三列确定。
+
+例如操作码为 80H 的 ADD 指令，它是一个 Grp 1 指令。表-6可以查到 ModR/M 字节中用于此指
+令的操作码扩展字段（reg/opcode）为 000B，r/m（比特 2 ~ 0）字段可以编码访问寄存器（11B）
+或使用指定的寻址模式访问内存地址（mem = 00B, 01B, 10B）。
+
+使用表-2、表-3、表-6查找 VMRESUME 指令的操作码 0F01C3：
+
+- 0F 表示此指令在双字节操作码映射中
+- 01（表-3 第 0 行的第 1 列）显式此操作码在 表-6 的 Grp 7
+- C3 是 ModR/M 字节，C3 的前两位是 11B，表示查看 表-6 中 Grp 7 的第二项
+- reg/opcode 字段 [5,4,3] 是 000B，表示在 Grp 7 中的 000 列查找
+- 最后，r/m 字段 [2,1,0] 是 011B，对应操作码为 VMRESUME 指令
+
+表-6：组编号的一字节和双字节操作码扩展 ::
+
+    Opcode  |Gr mod pfx | reg/opcode 5,4,3 (r/m 2,1,0 in parenthesis)                                                   |
+            |   7,6     |    000    |    001    |    010    |    011    |    100    |    101    |    110    |    111    |
+    80 ~ 83 |1  xxB --- |ADD        |OR         |ADC        |SBB        |AND        |SUB        |XOR        |CMP
+            |           |
+    8F      |1A xxB --- |POP        |
+            |           |
+    C0,     |2  xxB --- |ROL        |ROR        |RCL        |RCR        |SHL/SAL    |SHR        |           |SAR
+    C1 reg, |
+    imm D0, |
+    D1 reg, |
+    1 D2,   |
+    D3 reg, |
+    CL      |
+            |
+    F6, F7  |3  xxB --- |TEST       |           |NOT        |NEG        |MUL        |IMUL       |DIV        |IDIV
+            |           |   Ib/Iz                                           AL/rAX      AL/rAX      AL/rAX      AL/rAX
+    FE      |4  xxB --- |INC        |DEC        |
+            |           |   Eb          Eb
+    FF      |5  xxB --- |INC        |DEC        |near CALL↑f64|far CALL |near JMP↑f64|far JMP   |PUSH↑d64   |
+            |           |   Ev          Ev          Ev            Ep        Ev           Mp         Ev
+    0F 00   |6  xxB --- |SLDT       |STR        |LLDT       |LTR        |VERR       |VERW       |
+            |           |   Rv/Mw       Rv/Mw       Ew          Ew          Ew          Ew
+    0F 01   |7  mem --- |SGDT       |SIDT       |LGDT       |LIDT       |SMSW       |           |LMSW       |INVLPG
+            |           |   Ms          Ms          Ms          Ms      |   Mw/Rv   |           |   Ew          Mb
+            |   11B     |VMCALL(001)  |MONITOR(000)|XGETBV(000)         |           |           |           |SWAPGS↑o64
+            |           |VMLAUNCH(010)|MWAIT(001)  |XSETBV(001)         |           |           |           |  (000)
+            |           |VMRESUME(011)|CLAC(010)   |VMFUNC(100)         |           |           |           |RDTSCP(001)
+            |           |VMXOFF(100)  |STAC(011)   |XEND(101)           |           |           |           |
+            |           |             |ENCLS(111)  |XTEST(110)          |           |           |           |
+            |           |                          |ENCLU(111)          |           |           |           |
+    0F BA   |8  xxB --- |                                               |BT         |BTS        |BTR        |BTC
+            |           |
+    0F C7   |9  mem --- |           |CMPXCH8B   |                                               |VMPTRLD    |VMPTRST
+            |           |               Mq                                                          Mq          Mq
+            |           |           |CMPXCHG16B |
+            |           |               Mdq
+            |       66  |                                                                       |VMCLEAR    |
+            |           |                                                                           Mq
+            |       F3  |                                                                       |VMXON      |
+            |           |                                                                           Mq
+            |   11B     |                                                                       |RDRAND     |RDSEED
+            |           |                                                                           Rv          Rv
+            |       F3  |                                                                                   |RDPID
+            |           |                                                                                       Rd/q
+    0F B9   |10 mem --- |UD1                                                                                            |
+            |   11B     |                                                                                               |
+    C6      |11 mem --- |MOV        |
+            |           |   Eb,Ib   |
+            |   11B     |           |                                                                       |XABORT(000)
+            |           |           |                                                                           Ib
+    C7      |11 mem --- |MOV        |
+            |           |   Ev,Iz   |
+            |   11B     |           |                                                                       |XBEGIN(000)
+            |           |           |                                                                           Jz
+    0F 71   |12 mem --- |
+            |   11B     |                       |psrlw      |           |psraw      |           |psllw      |
+            |           |                           Nq,Ib                   Na,Ib                   Nq,Ib
+            |       66  |                       |vpsrlw     |           |vpsraw     |           |vpsllw     |
+            |           |                         Hx,Ux,Ib                Hx,Ux,Ib                Hx,Ux,Ib
+    0F 72   |13 mem --- |
+            |   11B     |                       |psrld      |           |psrad      |           |pslld      |
+            |           |                           Nq,Ib                   Nq,Ib                   Nq,Ib
+            |       66  |                       |vpsrld     |           |vpsrad     |           |vpslld     |
+            |           |                         Hx,Ux,Ib                Hx,Ux,Ib                Hx,Ux,Ib
+    0F 73   |14 mem --- |
+            |   11B     |                       |psrlq      |                                   |psllq      |
+            |           |                           Nq,Ib                                           Nq,Ib
+            |       66  |                       |vpsrlq     |vpsrldq    |                       |vpsllq     |vpslldq
+            |           |                         Hx,Ux,Ib    Hx,Ux,Ib                            Hx,Ux,Ib    Hx,Ux,Ib
+    0F AE   |15 mem --- |fxsave     |fxrstor    |ldmxcsr    |stmxcsr    |XSAVE      |XRSTOR     |XSAVEOPT   |clflush
+            |   11B     |                                                           |lfence     |mfence     |sfence
+            |       F3  |RDFSBASE   |RDGSBASE   |WRFSBASE   |WRGSBASE   |
+            |           |   Ry          Ry          Ry          Ry
+    0F 18   |16 mem --- |prefetch   |prefetch   |prefetch   |prefetch   |Reserved NOP                                   |
+            |           |   NTA         T0          T1          T2      |                                               |
+            |   11B     |Reserved NOP                                                                                   |
+    VEX.0F38|17 mem --- |           |BLSR↑v     |BLSMSK↑v   |BLSI↑v     |
+    F3      |   11B     |           |   By,Ey   |   By,Ey   |   By,Ey   |
