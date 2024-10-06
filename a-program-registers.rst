@@ -25,24 +25,24 @@
     16位:  flags
 
     包括状态标记（S），控制标记（C），系统标记（X）：
-    bit0  S cf  进位 CY NC 无符号算术运算结果相对目标寄存器有溢出
-    bit2  S pf  奇偶 PE PO 结果最低字节有偶数个1
-    bit4  S af  辅助       辅助进位，用于4位BCD码计算，BCD码计算溢出
-    bit6  S zf  零值 ZR NZ 计算结果是零
-    bit7  S sf  符号 NG PL 计算结果是负数
-    bit8  X tf  陷阱       启用单步调试
-    bit9  X if  中断       中断使能标记，开启时允许响应可掩码中断
-    bit10 C df  方向 DN UP 用于串操作，索引寄存器（si、di）递减，否则递增
-    bit11 S of  溢出 OV NV 有符号算术运算结果相对目标寄存器有溢出
-    bit12 X io  特权       iopl（privilege level）
-    bit13 X pl  级别       iopl，输入输出特权级别，控制对输入输出指令的访问
-    bit14 X nt  嵌套       嵌套任务标记，用于控制被中断和被调用任务的嵌套链
-    bit16 X rf  恢复       恢复调制器执行，控制处理器对调试异常的响应
-    bit17 X vm  虚拟       启用8086虚拟模式
-    bit18 X ac  对齐       启用对齐检查
-    bit19 X vif 虚拟       虚拟中断使能标记
-    bit20 X vip 虚拟       虚拟中断待处理
-    bit21 X id  标识       启用cpuid指令
+    bit0  S cf  进位  CY  无符号算术运算结果相对目标寄存器有溢出
+    bit2  S pf  奇偶  PE  结果最低字节有偶数个1
+    bit4  S af  辅助  AC  辅助进位，用于4位BCD码计算，BCD码计算溢出
+    bit6  S zf  零值  ZR  计算结果是零
+    bit7  S sf  符号  PL  计算结果是负数
+    bit8  X tf  陷阱      启用单步调试
+    bit9  X if  中断  EI  中断使能标记，开启时允许响应可掩码中断
+    bit10 C df  方向  UP  用于串操作，索引寄存器（si、di）递减，否则递增
+    bit11 S of  溢出  OV  有符号算术运算结果相对目标寄存器有溢出
+    bit12 X io  特权      iopl（privilege level）
+    bit13 X pl  级别      iopl，输入输出特权级别，控制对输入输出指令的访问
+    bit14 X nt  嵌套      嵌套任务标记，用于控制被中断和被调用任务的嵌套链
+    bit16 X rf  恢复      恢复调制器执行，控制处理器对调试异常的响应
+    bit17 X vm  虚拟      启用8086虚拟模式
+    bit18 X ac  对齐      启用对齐检查
+    bit19 X vif 虚拟      虚拟中断使能标记
+    bit20 X vip 虚拟      虚拟中断待处理
+    bit21 X id  标识      启用cpuid指令
 
 在32位机器模式下，不能使用以 r 开头的寄存器，包括：rax rbx rcx rdx rbp rsi rdi rsp
 r8 ~ r15 r8d ~ r15d r8w ~ r15w r8l ~ r15l rip rflags；也不能使用这四个64位机器才
