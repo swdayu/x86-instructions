@@ -937,26 +937,26 @@ EVEX 前缀的各种子字段编码使用以下符号描述：
 **DST**
     指令中的目标操作数。此字段由 reg_field 编码。
 
-在指令编码中，MODRM 字节根据其扮演的角色以多种方式表示。MODRM 字节包含 3 个字段：
+在指令编码中，ModR/M 字节根据其扮演的角色以多种方式表示。ModR/M 字节包含 3 个字段：
 
-1. 2 位的 MODRM.MOD 字段（mm）
-2. 3 位的 MODRM.REG 字段（rrr）
-3. 3 位的 MODRM.RM 字段（bbb）
+1. 2 位的 ModR/M.mod 字段（mm）
+2. 3 位的 ModR/M.reg 字段（reg）
+3. 3 位的 ModR/M.r/m 字段（r/m）
 
-当一条指令的所有 MODRM 字节位都有固定值时，在指令描述页面的编码框中，操作码后会展示该字
-节的 2 位十六进制值。当MODRM 字节的某些字段必须包含固定值时，这些值按以下方式指定：
+当一条指令的 ModR/M 字节中的所有比特位都有固定值时，在指令描述页面的编码框中，操作码后会
+展示该字节的 2 位十六进制值。当 ModR/M 字节的某些字段必须包含固定值时，这些值按以下方式
+指定：
 
-* 如果仅有的 MODRM.MOD 必须是 0b11，而 MODRM.REG 和 MODRM.RM 字段不受限制，这被表示为
-  11:rrr:bbb。rrr 对应于 MODRM.REG 字段的 3 位，bbb 对应于 MODRM.RM 字段的 3 位。
-* 如果 MODRM.MOD 字段被限制为除 0b11 之外的值，即它必须是 0b00、0b01 或 0b10 之一，那
-  么我们使用表示法 !(11)。
-* 如果 MODRM.REG 字段有特定的要求值，例如 0b101，那将被表示为 mm:101:bbb。
+* 如果 ModR/M.mod 必须是 0b11，而 ModR/M.reg 和 ModR/M.r/m 不受限制：11:reg:r/m。
+* 如果 ModR/M.mod 字段被限制为除 0b11 之外的值，即它必须是 0b00、0b01 或 0b10 之一，
+  则使用 !(11) 来表示。
+* 如果 ModR/M.reg 字段有特定的值要求，例如 0b101，则表示为 mm:101:r/m。
 
 操作数编码
 -----------
 
 “操作数编码” 列被缩写为 Op/En，每个汇编指令都提供了指令操作数编码信息。每个指令参考页面
-中的操作数编码表列出了每个指令操作数（根据指令语法和操作数顺序）相对于 ModRM 字节、VEX.vvvv
+中的操作数编码表列出了每个指令操作数（根据指令语法和操作数顺序）相对于 ModR/M 字节、VEX.vvvv
 字段或额外操作数编码位置。
 
 使用 EVEX 编码的指令采用压缩 disp8*N 编码的偏移字节，其中 N 在 EVEX 指令格式中描述的根
@@ -1344,7 +1344,7 @@ SIMD浮点异常说明
 
     7,6 5,4,3 2,1,0  7,6   5,4,3 2,1,0
     [mod reg/op r/m] [scale index base] [0B,1B,2B,4B 地址偏移] [0B,1B,2B,4B 立即数]
-        eee/ttt             xxx   bbb
+     mm reg/ttt       ss    idx   bse
      ModR/M Byte      SIB byte
 
     第一组前缀：F0H F2H F3H
@@ -1353,9 +1353,9 @@ SIMD浮点异常说明
     第四组前缀：67H
     REX 前缀占据 40H ~ 4FH 整行操作码（在兼容模式下表示 INC 和 DEC 指令）：
     W - 0 表示操作数大小由 CS.D 决定，1 表示操作数大小为 64 位
-    R - 扩展 ModR/M reg（Reee）字段，仅控制通用、SSE、控制、调试寄存器
-    X - 扩展 SIB index（Xxxx）字段
-    B - 扩展 ModR/M r/m（Br/m）、SIB base（Bbbb）、Opcode reg（Breg） 字段
+    R - 扩展 ModR/M reg（Rreg）字段，仅控制通用、SSE、控制、调试寄存器
+    X - 扩展 SIB index（Xidx）字段
+    B - 扩展 ModR/M r/m（Br/m）、SIB base（Bbse）、Opcode reg（Breg） 字段
     这些前缀是可选的，除非 66H F2H F3H 作为强制前缀用于指令扩展，或需要使用 64 位 REX
     扩展功能。
 
@@ -1369,7 +1369,24 @@ SIMD浮点异常说明
     67H - 内存地址大小前缀指定16位或32位地址大小而非默认大小
 
     66H 和 REX.W 对字节操作无效，对于非字节操作同时使用 66H 和 REX.W=1 会忽略 66H，如
-    果同时使用了 66H 以及 REX.W=0 则操作数大小为 16 位。
+    果同时使用了 66H 以及 REX.W=0 则操作数大小为 16 位。具体地：
+
+    CS.D        0   0   0   0   1   1   1   1
+    66H         N   N   Y   Y   N   N   Y   Y
+    67H         N   Y   N   Y   N   Y   N   Y
+    Operand     16  16  32  32  32  32  16  16
+    Address     16  32  16  32  32  16  32  16
+
+    CS.L        1   1   1   1   1   1   1   1
+    REX.W       0   0   0   0   1   1   1   1
+    66H         N   N   Y   Y   N   N   Y   Y
+    67H         N   Y   N   Y   N   Y   N   Y
+    Operand     32  32  16  16  64  64  64  64
+    Address     64  32  64  32  64  32  64  32
+
+    当处理器在实地址模式、虚拟 8086 模式或系统管理模式（SMM）下执行时，默认的操作数大小
+    和地址大小属性始终是 16 位。在 SSE 指令的情况下：66H、F2H 和 F3H 前缀是指令码扩展
+    的强制前缀。在这种情况下，有效的 REX.W 前缀与 66H 操作码扩展前缀之间没有交互作用。
 
     指令的主要操作码使用一到三个字节编码。在主要操作码中，可能定义了较小的编码字段，这些
     字段根据正在执行的操作类别而有所不同。几乎所有引用寄存器或内存操作数的指令都在操作码
@@ -1379,13 +1396,50 @@ SIMD浮点异常说明
 
     ModR/M 字节：
     mod - 00 01 10 操作数使用内存寻址，11 操作数是寄存器
-    reg/op - 指定第二操作数的寄存器编码（eee），或指定操作码扩展（ttt）
+    reg/op - 指定第二操作数的寄存器编码（reg），或指定操作码扩展（ttt）
     r/m - 指定寄存器操作数或编码寻址模式，有时 mod 和 r/m 可以表达某些指令的操作码信息
 
     SIB 字节，当 r/m 字段为 100 内存寻址时需要进一步使用 SIB 表达更复杂的寻址：
     scale - 指定缩放因子，00 01 10 11 表示分别乘以 1/2/4/8
-    index - 指定索引寄存器（xxx）
-    base - 指定基址寄存器（bbb）
+    index - 指定索引寄存器（idx）
+    base - 指定基址寄存器（bse）
+
+    寄存器编码：
+              000 001 010 011 100 101 110 111 1000 1001 1010 1011 1100 1101 1110 1111
+         r8 -  AL  CL  DL  BL  AH  CH  DH  BH
+     REX.r8 -  AL  CL  DL  BL SPL BPL SIL DIL R8B  R9B  R10B R11B R12B R13B R14B R15B
+        r16 -  AX  CX  DX  BX  SP  BP  SI  DI
+    REX.r16 -  AX  CX  DX  BX  SP  BP  SI  DI R8W  R9W  R10W R11W R12W R13W R14W R15W
+        r32 - EAX ECX EDX EBX ESP EBP ESI EDI
+    REX.r32 - EAX ECX EDX EBX ESP EBP ESI EDI R8D  R9D  R10D R11D R12D R13D R14D R15D
+    REX.r64 - RAX RCX RDX RBX RSP RBP RSI RDI R8   R9   R10  R11  R12  R13  R14  R15
+    Mod0r32 - EAX ECX EDX EBX SIB     ESI EDI
+    Mod0r64 - RAX RCX RDX RBX SIB     ESI EDI R8   R9   R10  R11  SIB       R14  R15
+    Mod1r32 - EAX ECX EDX EBX SIB EBP ESI EDI
+    Mod1r64 - RAX RCX RDX RBX SIB RBP RSI RDI R8   R9   R10  R11  SIB  R13  R14  R15
+     BSEr32 - EAX ECX EDX EBX ESP *** ESI EDI
+     BSEr64 - RAX RCX RDX RBX RSP *** RSI RDI R8   R9   R10  R11  R12  ***  R14  R15
+     IDXr32 - EAX ECX EDX EBX NON EBP ESI EDI
+     IDXr64 - RAX RCX RDX RBX NON RBP RSI RDI R8   R9   R10  R11  R12  R13  R14  R15
+
+    内存寻址：
+    [mmregreg][ssidxbse]    兼容模式                    64位模式
+     00reg100  ss100101     [disp32]                    [disp32]
+     00reg100  ssxxx101     disp32[IDXr32*ss]           disp32[IDXr64*ss]
+     00reg100  ss100yyy     [BSEr32]                    [BSEr64]
+     00reg100  ssxxxyyy     [BSEr32+IDXr32*ss]          [BSEr64+IDXr64*ss]
+     01reg100  ss100bse     disp8[BSEr32]               disp8[BSEr64]
+     01reg100  ssxxxbse     disp8[BSEr32+IDXr32*ss]     disp8[BSEr64+IDXr64*ss]
+     10reg100  ss100bse     disp16[BSEr32]              disp16[BSEr64]
+     10reg100  ssxxxbse     disp16[BSEr32+IDXr32*ss]    disp16[BSEr64+IDXr64*ss]
+    [mmregreg]              兼容模式                    64位模式
+     00reg101               [disp32]                    disp32[RIP]
+     00regzzz               [Mod0r32]                   [Mod0r64]
+     01regxxx               disp8[Mod1r32]              disp8[Mod1r64]
+     10regxxx               disp16[Mod1r32]             disp16[Mod1r64]
+    * xxx - 除 100 之外的其他编码
+    * yyy - 除 101 之外的其他编码
+    * zzz - 除 100 和 101 之外的其他编码
 
 下表列出了某些指令中出现的特殊字段，有时出现在主要操作码内： ::
 
@@ -1427,7 +1481,7 @@ SIMD浮点异常说明
 特殊字段 w 指定操作数大小： ::
 
     w           16位数据操作     32位数据操作
-    0           8位             8位
+    0            8位             8位
     1           16位            32位
 
 特殊字段 s 指定符号扩展： ::
