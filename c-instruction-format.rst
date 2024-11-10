@@ -1396,7 +1396,7 @@ SIMD浮点异常说明
 
     ModR/M 字节：
     mod - 00 01 10 操作数使用内存寻址，11 操作数是寄存器
-    reg/op - 指定第二操作数的寄存器编码（reg），或指定操作码扩展（ttt）
+    r/o - 指定第二操作数的寄存器编码（reg），或指定操作码扩展（ttt）
     r/m - 指定寄存器操作数或编码寻址模式，有时 mod 和 r/m 可以表达某些指令的操作码信息
 
     SIB 字节，当 r/m 字段为 100 内存寻址时需要进一步使用 SIB 表达更复杂的寻址：
@@ -1440,6 +1440,30 @@ SIMD浮点异常说明
     * xxx - 除 100 之外的其他编码
     * yyy - 除 101 之外的其他编码
     * zzz - 除 100 和 101 之外的其他编码
+
+    寻址编码：
+    [mmregreg][ssidxbse]
+     00reg000                   0X                  reg <-> [Mod0r32]                   X不能是4 5 C D
+          011                   1X
+          110                   2X
+          111                   3X
+     00reg100  00100101 disp32  S4|SC 25 disp32     reg <-> [disp32]                    S只能是0 1 2 3
+     00reg100  ssXXX101 disp32  S4|SC W5|WD disp32  reg <-> disp32[IDXr32*ss]           W5不能是25 65 A5 E5
+     00reg100  00100YYY         S4|SC 2Y            reg <-> [BSEr32]                    Y不能是5
+     00reg100  ssXXXYYY         S4|SC ??            reg <-> [BSEr32+IDXr32*ss]          ??不能是?5 ?D，也不包括2|6|A|E0~7
+     00reg101  disp32           S5|SD disp32        reg <-> disp32[RIP]
+     01reg000  disp8            4Z disp8            reg <-> disp8[Mod1r32]              Z不能是4 C
+          011                   5Z disp8
+          101                   6Z disp8
+          111                   7Z disp8
+     01reg100  00100bse disp8   T4|TC 20~27 disp8   reg <-> disp8[BSEr32]               T只能是4 5 6 7
+     01reg100  ssXXXbse disp8   T4|TC ?? disp16     reg <-> disp8[BSEr32+IDXr32*ss]     ??不包括20~27 60~67 A0~A7 E0~E7
+     10reg000  disp16           8Z disp16           reg <-> disp16[Mod1r32]
+          011                   9Z disp16
+          101                   AZ disp16
+          111                   BZ disp16
+     10reg100  00100bse disp16  U4|UC 20~27 disp16  reg <-> disp16[BSEr32]              U只能是8 9 A B
+     10reg100  ssXXXbse disp16  U4|UC ?? disp16     reg <-> disp16[BSEr32+IDXr32*ss]    ??不包括20~27 60~67 A0~A7 E0~E7
 
 下表列出了某些指令中出现的特殊字段，有时出现在主要操作码内： ::
 

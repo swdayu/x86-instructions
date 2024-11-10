@@ -9,36 +9,106 @@ ADD
 整数加法： ::
 
     操作码              指令             操作数  模式    简要描述
-    04 ib               ADD AL, imm8        I   V/V     imm8加到AL
-    05 iw               ADD AX, imm16       I   V/V     imm16加到AX
-    05 id               ADD EAX, imm32      I   V/V     imm32加到EAX
-    REX.W + 05 id       ADD RAX, imm32      I   V/N.E.  imm32符号扩展加到RAX
-    80 /0 ib            ADD r/m8, imm8      MI  V/V     imm8加到r/m8
-    REX + 80 /0 ib      ADD r/m8*, imm8     MI  V/N.E.  imm8符号扩展加到r/m8
-    81 /0 iw            ADD r/m16, imm16    MI  V/V     imm16加到r/m16
-    81 /0 id            ADD r/m32, imm32    MI  V/V     imm32加到r/m32
-    REX.W + 81 /0 id    ADD r/m64, imm32    MI  V/N.E.  imm32符号扩展加到r/m64
-    83 /0 ib            ADD r/m16, imm8     MI  V/V     imm8符号扩展加到r/m16
-    83 /0 ib            ADD r/m32, imm8     MI  V/V     imm8符号扩展加到r/m32
-    REX.W + 83 /0 ib    ADD r/m64, imm8     MI  V/N.E.  imm8符号扩展加到r/m64
-    00 /r               ADD r/m8, r8        MR  V/V     r8加到r/m8
-    REX + 00 /r         ADD r/m8*, r8*      MR  V/N.E.  r8加到r/m8
-    01 /r               ADD r/m16, r16      MR  V/V     r16加到r/m16
-    01 /r               ADD r/m32, r32      MR  V/V     r32加到r/m32
+            00 /r       ADD r/m8,  r8       MR  V/V     r8加到r/m8
+    REX   + 00 /r       ADD r/m8*, r8*      MR  V/N.E.  r8加到r/m8
+            01 /r       ADD r/m16, r16      MR  V/V     r16加到r/m16
+            01 /r       ADD r/m32, r32      MR  V/V     r32加到r/m32
     REX.W + 01 /r       ADD r/m64, r64      MR  V/N.E.  r64加到r/m64
-    02 /r               ADD r8, r/m8        RM  V/V     r/m8加到r8
-    REX + 02 /r         ADD r8*, r/m8*      RM  V/N.E.  r/m8加到r8
-    03 /r               ADD r16, r/m16      RM  V/V     r/m16加到r16
-    03 /r               ADD r32, r/m32      RM  V/V     r/m32加到r32
-    REX.W + 03 /r       ADD r64, r/m64      RM  V/N.E.  r/m64加到r64
+            02 /r       ADD r8,    r/m8     RM  V/V     r/m8加到r8
+    REX   + 02 /r       ADD r8*,   r/m8*    RM  V/N.E.  r/m8加到r8
+            03 /r       ADD r16,   r/m16    RM  V/V     r/m16加到r16
+            03 /r       ADD r32,   r/m32    RM  V/V     r/m32加到r32
+    REX.W + 03 /r       ADD r64,   r/m64    RM  V/N.E.  r/m64加到r64
+            04 ib       ADD AL,    imm8     I   V/V     imm8加到AL
+            05 iw       ADD AX,    imm16    I   V/V     imm16加到AX
+            05 id       ADD EAX,   imm32    I   V/V     imm32加到EAX
+    REX.W + 05 id       ADD RAX,   imm32    I   V/N.E.  imm32符号扩展加到RAX
+            80 /0 ib    ADD r/m8,  imm8     MI  V/V     imm8加到r/m8
+    REX   + 80 /0 ib    ADD r/m8*, imm8     MI  V/N.E.  imm8符号扩展加到r/m8
+            81 /0 iw    ADD r/m16, imm16    MI  V/V     imm16加到r/m16
+            81 /0 id    ADD r/m32, imm32    MI  V/V     imm32加到r/m32
+    REX.W + 81 /0 id    ADD r/m64, imm32    MI  V/N.E.  imm32符号扩展加到r/m64
+            83 /0 ib    ADD r/m16, imm8     MI  V/V     imm8符号扩展加到r/m16
+            83 /0 ib    ADD r/m32, imm8     MI  V/V     imm8符号扩展加到r/m32
+    REX.W + 83 /0 ib    ADD r/m64, imm8     MI  V/N.E.  imm8符号扩展加到r/m64
 
     * 在64位模式下，当使用了 REX 前缀，r/m8 不能被编码成 AH BH CH DH 寄存器
+    * /r ModR/M字段包含reg寄存器操作数和r/m操作数
+    * /0 ModR/M字段仅使用r/m操作数，其中reg字段的值为0
+    * ib 包含1个字节的立即数
+    * iw 包含2个字节的立即数
+    * id 包含4个字节的立即数
 
     类型    操作数1             操作数2         操作数3     操作数4
-    RM      ModR/M:reg(r,w)     ModR/M:r/m(r)    无          无
     MR      ModR/M:r/m(r,w)     ModR/M:reg(r)    无          无
+    RM      ModR/M:reg(r,w)     ModR/M:r/m(r)    无          无
     MI      ModR/M:r/m(r,w)     imm8/16/32       无          无
     I       AL/AX/EAX/RAX       imm8/16/32       无          无
+
+    ADD 加法（非64位模式）
+    reg => rg2                          0000 000w :  11 reg rg2
+    reg => mem                          0000 000w : mod reg mem
+    rg2 => reg                          0000 001w :  11 reg rg2
+    mem => reg                          0000 001w : mod reg mem
+    imm => AL AX EAX                    0000 010w : imm
+    imm => reg                          1000 00sw :  11 000 reg : imm
+    imm => mem                          1000 00sw : mod 000 mem : imm
+
+    ADD 加法（64位模式）
+    reg => rg2              0100 0R0B : 0000 000w :  11 reg rg2
+    reg => mem              0100 0RXB : 0000 000w : mod reg mem
+    r64 => rx2              0100 1R0B : 0000 0000 :  11 r64 rx2
+    m64 => r64              0100 1RXB : 0000 0000 : mod r64 mem
+    rg2 => reg              0100 0R0B : 0000 001w :  11 reg rg2
+    r64 => rx2              0100 1R0B : 0000 0010 :  11 r64 rx2
+    mem => reg              0100 0RXB : 0000 001w : mod reg mem
+    r64 => m64              0100 1RXB : 0000 0011 : mod r64 m64
+    imm => AL AX EAX                    0000 010w : imm8
+    imm => RAX              0100 1000 : 0000 0101 : imm32
+    imm => reg              0100 0000 : 1000 00sw :  11 000 reg : imm
+    imm => r64              0100 100B : 1000 0001 :  11 010 r64 : imm32
+    imm => mem              0100 00XB : 1000 00sw : mod 000 mem : imm
+    imm => m64              0100 10XB : 1000 0001 : mod 010 m64 : imm32
+    imm => m64              0100 10XB : 1000 0011 : mod 010 m64 : imm8
+
+    ADD (00H)   源头操作数是字节，位于r/o字段，是一个寄存器
+        Eb,Gb   目的操作数是字节，位于r/m字段，是寄存器或内存数据
+    [0100WRXB] opcode [mm r/o r/m]
+                [00]   mm reg mem   [00~BF]         r8 => m8
+        [40~47] [00]   mm reg mem   [00~BF]     REX.r8 => m8
+                [00]   11 reg reg   [C0~FF]         r8 => r8
+        [40~47] [00]   11 reg reg   [C0~FF]     REX.r8 => REX.r8
+
+    ADD (01H)   源头操作数大小根据属性决定，位于r/o字段，是一个寄存器
+        Ev,Gv   目的操作数大小根据属性决定，位于r/m字段，是寄存器或内存数据
+    [0100WRXB] opcode [mm r/o r/m]
+                [01]   mm reg mem   [00~BF]         r32 => m32
+        [40~47] [01]   mm reg mem   [00~BF]     REX.r32 => m32
+        [48~4F] [01]   mm reg mem   [00~BF]     REX.r64 => m64
+                [01]   11 reg reg   [C0~FF]         r32 => r32
+        [40~47] [01]   11 reg reg   [C0~FF]     REX.r32 => REX.r32
+        [48~4F] [01]   11 reg reg   [C0~FF]     REX.r64 => REX.r64
+
+    ADD (02H)
+        Gb,Eb
+
+        (03H)
+        Gv,Ev
+
+        (04H)
+        AL,Ib
+
+        (05H)
+        rAX,Iz
+
+        (80H)   xx 000 xxx
+        Eb,Ib
+
+        (81H)   xx 000 xxx
+        Ev,Iz
+
+        (83H)   xx 000 xxx
+        Ev,Ib
 
 将目标操作数（第一个操作数）与源操作数（第二个操作数）相加，然后将结果存储在目标操作数中。
 目标操作数可以是寄存器或内存位置；源操作数可以是立即数、寄存器或内存位置（但一条指令中不
@@ -81,114 +151,6 @@ DEST := DEST + SRC;
 - #AC(0)：如果启用了对齐检查，并且在当前特权级别为 3 时进行了未对齐的内存引用。在 64 位
   模式下，某些指令要求特定的对齐，例如某些 SSE 指令要求 16 字节对齐。
 - #UD：如果使用了 LOCK 前缀，但目标不是内存操作数。
-
-**使用示例**
-
-指令格式，qwreg 表示 64 位寄存器： ::
-
-    ADD – Add
-    reg to reg2                             0000 000w : 11 reg reg2
-    reg to mem                              0000 000w : mod reg r/m
-    reg2 to reg                             0000 001w : 11 reg reg2
-    mem to reg                              0000 001w : mod reg r/m
-    imm to AL, AX, or EAX                   0000 010w : imm
-    imm to reg                              1000 00sw : 11 000 reg : imm
-    imm to mem                              1000 00sw : mod 000 r/m : imm
-
-    ADD – Add (64-bit Mode)
-    reg to reg2                 0100 0R0B : 0000 000w : 11 reg reg2
-    qwreg to qwreg2             0100 1R0B : 0000 0000 : 11 qwreg qwreg2
-    qwreg to qwreg2             0100 1R0B : 0000 0010 : 11 qwreg qwreg2
-    reg to mem                  0100 0RXB : 0000 000w : mod reg r/m
-    qwreg to mem64              0100 1RXB : 0000 0011 : mod qwreg r/m
-    reg2 to reg                 0100 0R0B : 0000 001w : 11 reg reg2
-    mem to reg                  0100 0RXB : 0000 001w : mod reg r/m
-    mem64 to qwreg              0100 1RXB : 0000 0000 : mod qwreg r/m
-    imm to AL, AX, or EAX                   0000 010w : imm8
-    imm to RAX                  0100 1000 : 0000 0101 : imm32
-    imm to reg                  0100 000B : 1000 00sw : 11 000 reg : imm
-    imm32 to qwreg              0100 100B : 1000 0001 : 11 010 qwreg : imm
-    imm to mem                  0100 00XB : 1000 00sw : mod 000 r/m : imm
-    imm32 to mem64              0100 10XB : 1000 0001 : mod 010 r/m : imm32
-    imm8 to mem64               0100 10XB : 1000 0011 : mod 010 r/m : imm8
-
-    表-2：
-    |    00     |    01     |    02     |    03     |    04     |    05     |
-    |ADD                                                                    |
-    |   Eb,Gb       Ev,Gv       Gb,Eb       Gv,Ev       AL,Ib       rAX,Iz  |
-
-    |    80     |    81     |           |    83     |
-    |Immediate Grp 1↑1A                             |
-    | { Eb,Ib       Ev,Iz     Eb,Ib↑i64     Ev,Ib }
-
-    表-6：
-    Opcode  |Gr mod pfx | reg/opcode 5,4,3 (r/m 2,1,0 in parenthesis)
-            |   7,6     |    000    |
-    80 ~ 83 |1  xxB --- |ADD        |
-
-ADD_00_01_02_03: ::
-
-    操作码          指令                操作数          模式        简要描述
-    00 /r           ADD r/m8, r8        MR              V/V         r8加到r/m8
-    REX + 00 /r     ADD r/m8*, r8*      MR              V/N.E.      r8加到r/m8
-    01 /r           ADD r/m16, r16      MR              V/V         r16加到r/m16
-    01 /r           ADD r/m32, r32      MR              V/V         r32加到r/m32
-    REX.W + 01 /r   ADD r/m64, r64      MR              V/N.E.      r64加到r/m64
-    02 /r           ADD r8, r/m8        RM              V/V         r/m8加到r8
-    REX + 02 /r     ADD r8*, r/m8*      RM              V/N.E.      r/m8加到r8
-    03 /r           ADD r16, r/m16      RM              V/V         r/m16加到r16
-    03 /r           ADD r32, r/m32      RM              V/V         r/m32加到r32
-    REX.W + 03 /r   ADD r64, r/m64      RM              V/N.E.      r/m64加到r64
-    类型            操作数1             操作数2         操作数3     操作数4
-    MR              ModR/M:r/m(r,w)     ModR/M:reg(r)    无          无
-    RM              ModR/M:reg(r,w)     ModR/M:r/m(r)    无          无
-    操作码映射
-    ADD (00H)      (01H)               (02H)           (03H)
-        Eb,Gb       Ev,Gv               Gb,Eb           Gv,Ev
-    * /r 表示 ModR/M 字节包含 reg 操作数和 r/m 操作数
-    * r8 r16 r32 r64 表示操作数是 8/16/32/64 位寄存器
-    * r/m8 r/m16 r/m32 r/m64 表示操作数是 8/16/32/64 位寄存器或者内存数据
-    * 在64位模式下，当使用了 REX 前缀，r/m8 不能被编码成 AH BH CH DH 寄存器
-    * Eb,Gb 表示第一个操作数是 Eb，第二个操作数是 Gb，两个操作数的大小都是字节（b），忽略操作数大小属性
-    * Ev,Gv 表示第一个操作数是 Ev，第二个操作数是 Gv，两个操作数的大小根据属性决定（v），是字（2B）双字（4B）或四字（8B）
-    * E 表示操作数由 ModR/M 字节的 r/m 字段指定，可以是寄存器或内存操作数
-    * G 表示操作数由 ModR/M 字节的 reg 字段指定，是一个寄存器操作数
-
-    指令编码
-    reg to reg2                             0000 000w : 11 reg reg2
-    reg to mem                              0000 000w : mod reg r/m
-    reg2 to reg                             0000 001w : 11 reg reg2
-    mem to reg                              0000 001w : mod reg r/m
-    reg to reg2                 0100 0R0B : 0000 000w : 11 reg reg2
-    reg to mem                  0100 0RXB : 0000 000w : mod reg r/m
-    reg2 to reg                 0100 0R0B : 0000 001w : 11 reg reg2
-    mem to reg                  0100 0RXB : 0000 001w : mod reg r/m
-    qwreg to qwreg2             0100 1R0B : 0000 0000 : 11 qwreg qwreg2
-    qwreg to qwreg2             0100 1R0B : 0000 0010 : 11 qwreg qwreg2
-    qwreg to mem64              0100 1RXB : 0000 0011 : mod qwreg r/m
-    mem64 to qwreg              0100 1RXB : 0000 0000 : mod qwreg r/m
-
-    [0100WRXB 76543210 mmregr/m]
-              00000000 mmregmem     ADD m8,r8
-              00000000 11regreg'    ADD r8',r8
-     01000RXB 00000000 mmregmem     ADD m8,r8       r8 - REX.r8
-     01000R0B 00000000 11regreg'    ADD r8',r8      r8 - REX.r8
-     01001RXB 00000000 mmregmem     ADD m64,r64
-     01001R0B 00000000 11regreg'    ADD r64',r64
-          66H 00000001 mmregmem     ADD m16,r16
-          66H 00000001 11regreg'    ADD r16',r16
-              00000001 mmregmem     ADD m32,r32
-              00000001 11regreg'    ADD r32',r32
-     01000RXB 00000001 mmregmem     ADD m32,r32     r32 - REX.r8
-     01000R0B 00000001 11regreg'    ADD r32',r32    r32 - REX.r32
-     01001RXB 00000001 mmregmem     ADD m64,r64
-     01001R0B 00000001 11regreg'    ADD r64',r64
-              00000010 mmregmem     ADD r8,m8
-              00000010 11regreg'    ADD r8,r8'
-          66H 00000011 mmregmem     ADD r16,m16
-          66H 00000011 11regreg'    ADD r16,r16'
-              00000011 mmregmem     ADD r32,m32
-              00000011 11regreg'    ADD r32,r32'
 
 ADC 带进位加法
 ==============
