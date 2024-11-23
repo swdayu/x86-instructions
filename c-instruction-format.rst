@@ -1340,12 +1340,16 @@ SIMD浮点异常说明
 
                        76543210   76543210 76543210 76543210
     [Legacy Prefixes] [0100WRXB] [TTTTTTTT|TTTTTTTT|TTTTTTTT]
-                      REX Prefix  1B,2B,3B Opcode
+                      REX Prefix  1B,2B,3B-Opcode
 
-    7,6 5,4,3 2,1,0  7,6   5,4,3 2,1,0
+     76   543   210    76   543   210
     [mod reg/op r/m] [scale index base] [0B,1B,2B,4B 地址偏移] [0B,1B,2B,4B 立即数]
      mm reg/ttt       ss    idx   bse
      ModR/M Byte      SIB byte
+
+    单字节操作码：XXH
+    两字节操作码：0FH XXH
+    三字节操作码：0FH XXH XXH
 
     第一组前缀：F0H F2H F3H
     第二组前缀：26H 2EH 36H 3EH 64H 65H
