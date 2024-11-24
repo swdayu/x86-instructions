@@ -503,15 +503,195 @@ CMOVcc
 CALL
 ------
 
-过程调用
+过程调用： ::
+
+    操作码              指令             操作数  模式    简要描述
+            E8 cw       CALL rel16          D   N.S./V  Call near, relative, displacement relative to next
+    instruction.
+            E8 cd       CALL rel32          D   V/V     Call near, relative, displacement relative to next
+    instruction. 32-bit displacement sign extended to
+    64-bits in 64-bit mode.
+            FF /2       CALL r/m16          M   N.E./V  Call near, absolute indirect, address given in r/m16.
+            FF /2       CALL r/m32          M   N.E./V  Call near, absolute indirect, address given in r/m32.
+            FF /2       CALL r/m64          M   V/N.E.  Call near, absolute indirect, address given in r/m64.
+            9A cd       CALL ptr16:16       D   I/V     Call far, absolute, address given in operand.
+            9A cp       CALL ptr16:32       D   I/V     Call far, absolute, address given in operand.
+            FF /3       CALL m16:16 M V/V Call far, absolute indirect address given in m16:16.
+    In 32-bit mode: if selector points to a gate, then RIP
+    = 32-bit zero extended displacement taken from
+    gate; else RIP = zero extended 16-bit offset from
+    far pointer referenced in the instruction.
+            FF /3       CALL m16:32         M   V/V     In 64-bit mode: If selector points to a gate, then RIP
+    = 64-bit displacement taken from gate; else RIP =
+    zero extended 32-bit offset from far pointer
+    referenced in the instruction.
+    REX.W + FF /3       CALL m16:64         M   V/N.E.  In 64-bit mode: If selector points to a gate, then RIP
+    = 64-bit displacement taken from gate; else RIP =
+    64-bit offset from far pointer referenced in the
+    instruction. 
+
+    类型    操作数1             操作数2         操作数3     操作数4
+    D       Offset              无              无          无
+    M       ModRM:r/m (r)       无              无          无
+
+    CALL – Call Procedure (in same segment)
+    direct 1110 1000 : full displacement
+    register indirect 1111 1111 : 11 010 reg
+    memory indirect 1111 1111 : mod 010 r/m
+    CALL – Call Procedure (in other segment)
+    direct 1001 1010 : unsigned full offset, selector
+    indirect 1111 1111 : mod 011 r/m
+
+    CALL – Call Procedure (in same segment)
+    direct 1110 1000 : displacement32
+    register indirect 0100 WR00w 1111 1111 : 11 010 reg
+    memory indirect 0100 W0XBw 1111 1111 : mod 010 r/m
+    CALL – Call Procedure (in other segment)
+    indirect 1111 1111 : mod 011 r/m
+    indirect 0100 10XB 0100 1000 1111 1111 : mod 011 r/m
+
+
+
+**操作**
+
+该指令可以执行四种不同类型的调用：
+
+1. 近跳转（near jump）- 段内跳转，该段为 CS 段寄存器当前指向的代码段
+2. 短跳转（short jump）- 跳转范围限制在 -128 到 127 范围内，相对于当前的指令指针
+3. 远跳转（far jump）- 跨段跳转，跳转到拥有相同特权等级的另外一个代码段的一个指令位置
+4. 任务切换（task switch）- 跳转到另一个任务的一个指令位置
+
+任务切换仅能在保护模式执行，参见第3卷第8章。近跳转的目标操作数可以是一个绝对偏移，或者
+相对偏移，相对偏移通常对应为汇编代码中的一个标签，但是在机器代码级别，它是一个8/16/32
+位的有符号立即数，然后加到当前的指令指针寄存器上。当前的指令指针的值，表示的是当前JMP
+指令之后的那个指令的地址。
+
+**标志位**
+
+如果发生了任务切换所有标志位都受影响，如果没有任务切换不影响标志位。
 
 RET
 -----
 
-调用返回
+调用返回： ::
+
+    操作码              指令             操作数  模式    简要描述
+    C2 iw               RET imm16           I   V/V     近返回到主调过程并弹出imm16个字节
+    C3                  RET                 ZO  V/V     近返回到主调过程
+    CA iw               RET imm16           I   V/V     远返回到主调过程并弹出imm16个字节
+    CB                  RET                 ZO  V/V     远返回到主调过程
+
+    类型    操作数1             操作数2         操作数3     操作数4
+    ZO      无                  无              无          无
+    I       imm16               无              无          无
+
+    RET – Return from Procedure (to same segment)
+    no argument 1100 0011
+    adding immediate to SP 1100 0010 : 16-bit displacement
+    RET – Return from Procedure (to other segment)
+    intersegment 1100 1011
+    adding immediate to SP 1100 1010 : 16-bit displacement
+
+    RET – Return from Procedure (to same segment)
+    no argument 1100 0011
+    adding immediate to SP 1100 0010 : 16-bit displacement
+    RET – Return from Procedure (to other segment)
+    intersegment 1100 1011
+    adding immediate to SP 1100 1010 : 16-bit displacement
+
+    near RET↑f64 (C2H)  (C3H)
+                  Iw
+
+    far RET (CAH)   (CBH)
+             Iw
+
+    * ↑f64  在 64 位模式下，操作数大小被强制为 64 位操作数大小
+    * Iw    操作数大小是两字节，位于立即数字段
+
+**操作**
+
+该指令可以执行三种不同类型的返回：
+
+1. 近返回（近返回）- 返回到当前代码段中的一个过程，CS 段寄存器指向当前代码段
+2. 远返回（far return）- 返回到另一个代码段中的一个过程
+3. 跨特权级别远返回（inter-privilege-level far return）- 远返回到一个不同特权级别过程
+
+任务切换仅能在保护模式执行，参见第3卷第8章。近跳转的目标操作数可以是一个绝对偏移，或者
+相对偏移，相对偏移通常对应为汇编代码中的一个标签，但是在机器代码级别，它是一个8/16/32
+位的有符号立即数，然后加到当前的指令指针寄存器上。当前的指令指针的值，表示的是当前JMP
+指令之后的那个指令的地址。
+
+**标志位**
+
+不影响标志位。
 
 ENTER
 ------
 
+过程进入： ::
+
+    操作码              指令             操作数  模式    简要描述
+    C8 iw 00            ENTER imm16, 0      II  V/V     Create a stack frame for a procedure.
+    C8 iw 01            ENTER imm16, 1      II  V/V     Create a stack frame with a nested pointer for
+    a procedure.
+    C8 iw ib            ENTER imm16, imm8   II  V/V     Create a stack frame with nested pointers for
+    a procedure.
+
+    类型    操作数1             操作数2         操作数3     操作数4
+    II      iw                  imm8            无          无
+
+    ENTER – Make Stack Frame for High Level Procedure 1100 1000 : 16-bit displacement : 8-bit level (L)
+
+    ENTER (C8H)
+          Iw,Ib
+
+    * Iw    操作数大小是两字节，位于立即数字段
+    * Ib    操作数大小是单字节，位于立即数字段
+
+**操作**
+
+**标志位**
+
+不影响标志位。
+
 LEAVE
 ------
+
+过程退出： ::
+
+    操作码              指令             操作数  模式    简要描述
+    C9                  LEAVE               ZO  V/V     Set SP to BP, then pop BP.
+    C9                  LEAVE               ZO  N.E./V  Set ESP to EBP, then pop EBP.
+    C9                  LEAVE               ZO  V/N.E.  Set RSP to RBP, then pop RBP.
+
+    类型    操作数1             操作数2         操作数3     操作数4
+    ZO      无                  无              无          无
+
+    LEAVE – High Level Procedure Exit 1100 1001
+    LEAVE – High Level Procedure Exit 1100 1001
+
+    LEAVE↑d64 (C9H)
+
+    * ↑f64  在 64 位模式下，操作数大小被强制为 64 位操作数大小
+
+**操作**
+
+    IF StackAddressSize = 32
+    THEN
+    ESP := EBP;
+    ELSE IF StackAddressSize = 64
+    THEN RSP := RBP; FI;
+    ELSE IF StackAddressSize = 16
+    THEN SP := BP; FI;
+    FI;
+    IF OperandSize = 32
+    THEN EBP := Pop();
+    ELSE IF OperandSize = 64
+    THEN RBP := Pop(); FI;
+    ELSE IF OperandSize = 16
+    THEN BP := Pop(); FI;
+    FI;
+
+**标志位**
+
+不影响标志位。
