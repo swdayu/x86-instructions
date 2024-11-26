@@ -822,6 +822,47 @@ ENTER 指令和 LEAVE 指令配套用于支持块结构化语言。ENTER 指令�
    在 66H ENTER 之后 RBP/EBP 的值仍然是栈中的有效地址，着确保 66H LEAVE 可以从栈中恢
    复 16 位数据
 
+对应伪代码如下： ::
+
+    AllocSize := imm16
+    NestingLevel := imm8 MOD 32
+    Push(RBP/EBP/BP)
+    Frame := RSP/ESP/SP
+    if NestingLevel = 0 {
+        goto Continue;
+    }
+    if NestingLevel > 1 {
+        Do NestingLevel - 1 times {
+            if OperandSize = 64 {
+                RBP -= 8;
+                Push([RBP])
+            } else if OperandSize = 32 {
+                if StackSize = 32 {
+                    EBP -= 4;
+                    Push([EBP]); 压入四字节
+                } else StackSize = 16 {
+                    BP -= 4;
+                    Push([BP]); 压入四字节
+                }
+            } else OperandSize = 16 {
+                if StackSize = 64 {
+                    RBP -= 2;
+                    Push([RBP]); 压入两字节
+                } else if StackSize = 32 {
+                    EBP -= 2;
+                    Push([EBP]); 压入两字节
+                } else StackSize = 16 {
+                    BP -= 2;
+                    Push([BP]); 压入两字节
+                }
+            }
+        }
+    }
+    Push(Frame)
+    Continue:
+    RBP/EBP/BP := Frame
+    RSP/ESP/SP -= AllocSize
+
 **标志位**
 
 不影响标志位。
@@ -847,6 +888,8 @@ LEAVE
     * ↑d64 在64位模式下，指令默认为64位操作数大小，无法编码为32位操作数大小
 
 **操作**
+
+该指令操作如下： ::
 
     if StackAddrSize = 32 {
         ESP := EBP;
