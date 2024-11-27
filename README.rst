@@ -4,7 +4,9 @@ x86 指令集文档
 2. `基本架构和环境 <b-basic-environment.rst>`_
 3. `处理器指令格式 <c-instruction-format.rst>`_
 4. `操作码映射表 <d-opcode-map-table.rst>`_
-5. `算术运算指令 <f-arithmetic-instructions.rst>`_
+5. `数据传输指令 <e-data-transfer-instructions.rst>`_
+6. `跳转调用指令 <f-jump-call-instructions.rst>`_
+7. `算术运算指令 <g-arithmetic-instructions.rst>`_
 
 参考链接
 
