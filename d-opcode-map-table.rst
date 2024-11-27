@@ -344,7 +344,7 @@ VEX 前缀指令的操作数大小可以由操作数类型代码确定。128 位
     2 ----- |MOV        |MOV        |MOV        |MOV        |
             |   Rd,Cd       Rd,Dd       Cd,Rd       Dd,Rd
     3 ----- |WRMSR      |RDTSC      |RDMSR      |RDPMC      |SYSENTER   |SYSEXIT    |           |GETSEC
-    4 ----- |CMOVcc, (Gv,Ev) - Conditioanl Move
+    4 ----- |CMOVcc (Gv,Ev) - Conditioanl Move
             |   O           NO         B/C/NAE    AE/NB/NC      E/Z         NE/NZ       BE/NA       A/NBE
     5 ----- |vmovmskps  |vsqrtps    |vrsqrtps   |vrcpps     |vandps     |vandnps    |vorps      |vxorps
             | Gy,Ups       Vps,Wps     Vps,Wps     Vps,Wps   Vps,Hps,Wps Vps,Hps,Wps Vps,Hps,Wps Vps,Hps,Wps
@@ -426,7 +426,7 @@ VEX 前缀指令的操作数大小可以由操作数类型代码确定。128 位
             |                        Vsd,Hsd,Ey                Gy,Wsd      Gy,Wsd
     3 ----- |3-byte ESC |           |3-byte ESC |
             |  (表-4)                  (表-5)
-    4 ----- |CMOVcc(Gv,Ev) - Conditioanl Move
+    4 ----- |CMOVcc (Gv,Ev) - Conditioanl Move
             |   S           NS          P/PE        NP/PO       L/NGE       NL/GE       LE/NG       NLE/G
     5 ----- |vaddps     |vmulps     |vcvtps2pd  |vcvtdq2ps  |vsubps     |vminps     |vdivps     |vmaxps
             |Vps,Hps,Wps Vps,Hps,Wps   Vpd,Wps     Vps,Wdq   Vps,Hps,Wps Vps,Hps,Wps Vps,Hps,Wps Vps,Hps,Wps
@@ -695,7 +695,7 @@ VEX 前缀指令的操作数大小可以由操作数类型代码确定。128 位
             |           |                          |ENCLU(111)          |           |           |           |
     0F BA   |8  xxB --- |                                               |BT         |BTS        |BTR        |BTC
             |           |
-    0F C7   |9  mem --- |           |CMPXCH8B   |                                               |VMPTRLD    |VMPTRST
+    0F C7   |9  mem --- |           |CMPXCHG8B  |                                               |VMPTRLD    |VMPTRST
             |           |               Mq                                                          Mq          Mq
             |           |           |CMPXCHG16B |
             |           |               Mdq

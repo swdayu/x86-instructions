@@ -609,6 +609,19 @@ CMOVcc
     类型    操作数1             操作数2         操作数3     操作数4
     RM      ModRM:reg (r, w)    ModRM:r/m (r)   无          无
 
+    CMOVcc 条件移动
+    rg2 => reg          0000 1111 : 0100 tttn : 11 reg rg2
+    mem => reg          0000 1111 : 0100 tttn : mm reg mem
+
+    CMOVcc Gv,Ev
+        (40H)   (41H)   (42H)   (43H)   (44H)   (45H)   (46H)   (47H)
+          O       NO   B/C/NAE AE/NB/NC  E/Z    NE/NZ   BE/NA   A/NBE
+        (48H)   (49H)   (4AH)   (4BH)   (4CH)   (4DH)   (4EH)   (4FH)
+          S       NS    P/PE    NP/PO   L/NGE   NL/GE   LE/NG   NLE/G
+
+    * Ev    操作数大小根据属性决定，位于r/m字段，是寄存器或内存数据
+    * Gv    操作数大小根据属性决定，位于reg字段，是一个寄存器
+
 **操作**
 
 该指令的操作如下： ::
