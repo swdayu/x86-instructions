@@ -26,7 +26,7 @@ MOV
     REX.W + A0          MOV AL, moffs8      FD  V/N.E.  位于 (offset) 的单字节 => AL
             A1          MOV AX, moffs16     FD  V/V     位于 (seg:offset) 的两字节 => AX
             A1          MOV EAX, moffs32    FD  V/V     位于 (seg:offset) 的四字节 => EAX
-    REX.W + A1          MOV RAX, moffs64    FD  V/N.E.  位于 (offset) 的八字就 => RAX
+    REX.W + A1          MOV RAX, moffs64    FD  V/N.E.  位于 (offset) 的八字节 => RAX
             A2          MOV moffs8, AL      TD  V/V     AL => (seg:offset)
     REX.W + A2          MOV moffs8, AL      TD  V/N.E.  AL => (offset)
             A3          MOV moffs16, AX     TD  V/V     AX => (seg:offset)
@@ -95,51 +95,20 @@ MOV
     AL, AX, or EAX => mem       0100 0000 : 1010 001w : disp
     RAX => m64                  0100 1000 : 1010 0011 : disp64
 
-    MOV (88H)
-        Eb,Gb
+    MOV (88H)   (89H)   (8AH)   (8BH)   (8CH)   (8EH)
+        Eb,Gb   Ev,Gv   Gb,Eb   Gv,Ev   Ev,Sw   Sw,Ew
 
-    MOV (89H)
-        Ev,Gv
-    
-    MOV (8AH)
-        Gb,Eb
-    
-    MOV (8BH)
-        Gv,Ev
-    
-    MOV (8CH)
-        Ev,Sw
-    
-    MOV (8EH)
-        Sw,Ew
-    
-    MOV (A0H)
-        AL,Ob
-    
-    MOV (A1H)
-        rAX,Ov
-    
-    MOV (A2H)
-        Ob,AL
-    
-    MOV (A3H)
-        Ov,rAX
-    
-    MOV (B0H)   源头操作数大小是字节，位于立即数字段
-        r8,Ib   目的操作数大小是字节，位于操作码中的reg字段，是一个寄存器
-    [0100WRXB] opcode
-                [B0]  [imm8]    imm8 => AL
-                [B7]  [imm8]    imm8 => BH
-          [41]  [B0]  [imm8]    imm8 => R8B
-          [41]  [B7]  [imm8]    imm8 => R15B
+    MOV (A0H)   (A1H)   (A2H)   (A3H)
+        AL,Ob  rAX,Ov   Ob,AL   Ov,rAX
 
-    MOV (B8H~BFH)
-        reg,Iv
+    MOV (B0H~B7H)
+          r8,Ib
+        (B8H~BFH)
+          reg,Iv
 
-    MOV (C6H)
+    MOV (C6H) mm 000 r/m imm8
         Eb,Ib
-
-    MOV (C7H)
+        (C7H) mm 000 r/m immz
         Ev,Iz
 
 **操作**
@@ -167,9 +136,9 @@ LEA
     RM      ModRM:reg (w)       ModRM:r/m (r)   无          无
 
     LEA 加载地址
-    => reg                              1000 1101 : mod↑A reg r/m
-    => r16/r32              0100 0RXB : 1000 1101 : mod↑A reg r/m
-    => r64                  0100 1RXB : 1000 1101 : mod↑A r64 r/m
+    => reg                              1000 1101 : mod↑A reg mem
+    => r16/r32              0100 0RXB : 1000 1101 : mod↑A reg mem
+    => r64                  0100 1RXB : 1000 1101 : mod↑A r64 mem
 
     LEA (8DH)   源头操作数大小根据属性决定，位于r/m字段，只能引用内存
         Gv,M    目的操作数大小根据属性决定，位于reg字段，是一个寄存器
@@ -186,31 +155,241 @@ LEA
 
 不影响标志位。
 
+MOVSX
+-------
 
-MOVSX 符号位扩展移动
---------------------
+符号扩展移动： ::
 
-MOVZX 零位扩展移动
-------------------
+    操作码              指令             操作数  模式    简要描述
+            0F BE /r    MOVSX r16, r/m8     RM  V/V     Move byte to word with sign-extension.
+            0F BE /r    MOVSX r32, r/m8     RM  V/V     Move byte to doubleword with signextension.
+      REX + 0F BE /r    MOVSX r16/32, r/m8* RM  V/N.E.  Move byte to word/doubleword with signextension.
+    REX.W + 0F BE /r    MOVSX r64, r/m8*    RM  V/N.E.  Move byte to quadword with sign-extension.
+            0F BF /r    MOVSX r32, r/m16    RM  V/V     Move word to doubleword, with signextension.
+    REX.W + 0F BF /r    MOVSX r64, r/m16    RM  V/N.E.  Move word to quadword with sign-extension.
+            63 /r       MOVSXD r16, r/m16   RM  V/N.E.  Move word to word with sign-extension.
+            63 /r       MOVSXD r32, r/m32   RM  V/N.E.  Move doubleword to doubleword with signextension.
+    REX.W + 63 /r       MOVSXD r64, r/m32   RM  V/N.E.  Move doubleword to quadword with signextension.
+
+    * 不推荐在64位模式下使用不带 REX.W 的 MOVSXD 指令，而应该使用 MOV 指令
+
+    类型    操作数1             操作数2         操作数3     操作数4
+    RM      ModRM:reg (w)       ModRM:r/m (r)   无          无
+
+**操作**
+
+DEST := SignExtend(SRC);
+
+**标志位**
+
+不影响标志位。
+
+MOVZX
+-------
+
+零扩展移动： ::
+
+    操作码              指令             操作数  模式    简要描述
+            0F B6 /r    MOVZX r16, r/m8     RM  V/V     Move byte to word with zero-extension.
+            0F B6 /r    MOVZX r32, r/m8     RM  V/V     Move byte to doubleword, zero-extension.
+      REX + 0F B6 /r    MOVZX r16/32, r/m8* RM  V/N.E.  Move byte to word/doubleword, zeroextension.
+    REX.W + 0F B6 /r    MOVZX r64, r/m8*    RM  V/N.E.  Move byte to quadword, zero-extension.
+            0F B7 /r    MOVZX r32, r/m16    RM  V/V     Move word to doubleword, zero-extension.
+    REX.W + 0F B7 /r    MOVZX r64, r/m16    RM  V/N.E.  Move word to quadword, zero-extension.
+
+    类型    操作数1             操作数2         操作数3     操作数4
+    RM      ModRM:reg (w)       ModRM:r/m (r)   无          无
+
+**操作**
+
+DEST := ZeroExtend(SRC);
+
+**标志位**
+
+不影响标志位。
 
 MOVBE
 ------
 
-XCHG 数据交换
---------------
+交换字节后移动： ::
 
-BSWAP 字节交换
---------------
+    操作码              指令             操作数  模式    简要描述
+            0F 38 F0 /r MOVBE r16, m16      RM  V/V     MOVBE Reverse byte order in m16 and move to r16.
+            0F 38 F0 /r MOVBE r32, m32      RM  V/V     MOVBE Reverse byte order in m32 and move to r32.
+    REX.W + 0F 38 F0 /r MOVBE r64, m64      RM  V/N.E.  MOVBE Reverse byte order in m64 and move to r64.
+            0F 38 F1 /r MOVBE m16, r16      MR  V/V     MOVBE Reverse byte order in r16 and move to m16.
+            0F 38 F1 /r MOVBE m32, r32      MR  V/V     MOVBE Reverse byte order in r32 and move to m32.
+    REX.W + 0F 38 F1 /r MOVBE m64, r64      MR  V/N.E.  MOVBE Reverse byte order in r64 and move to m64.
 
-XADD 交换并相加
----------------
+    类型    操作数1             操作数2         操作数3     操作数4
+    RM      ModRM:reg (w)       ModRM:r/m (r)   无          无
+    MR      ModRM:r/m (w)       ModRM:reg (r)   无          无
 
-CMPXCHG 比较交换
-----------------
+**标志位**
 
-CMPXCHG8B 比较交换8字节
------------------------
+不影响标志位。
 
+XCHG 
+-----
+
+数据交换： ::
+
+    操作码              指令             操作数  模式    简要描述
+            90+rw       XCHG AX, r16        O   V/V     Exchange r16 with AX.
+            90+rw       XCHG r16, AX        O   V/V     Exchange AX with r16.
+            90+rd       XCHG EAX, r32       O   V/V     Exchange r32 with EAX.
+    REX.W + 90+rd       XCHG RAX, r64       O   V/N.E.  Exchange r64 with RAX.
+            90+rd       XCHG r32, EAX       O   V/V     Exchange EAX with r32.
+    REX.W + 90+rd       XCHG r64, RAX       O   V/N.E.  Exchange RAX with r64.
+            86 /r       XCHG r/m8, r8       MR  V/V     Exchange r8 (byte register) with byte from r/m8.
+      REX + 86 /r       XCHG r/m8*, r8*     MR  V/N.E.  Exchange r8 (byte register) with byte from r/m8.
+            86 /r       XCHG r8, r/m8       RM  V/V     Exchange byte from r/m8 with r8 (byte register).
+      REX + 86 /r       XCHG r8*, r/m8*     RM  V/N.E.  Exchange byte from r/m8 with r8 (byte register).
+            87 /r       XCHG r/m16, r16     MR  V/V     Exchange r16 with word from r/m16.
+            87 /r       XCHG r16, r/m16     RM  V/V     Exchange word from r/m16 with r16.
+            87 /r       XCHG r/m32, r32     MR  V/V     Exchange r32 with doubleword from r/m32.
+    REX.W + 87 /r       XCHG r/m64, r64     MR  V/N.E.  Exchange r64 with quadword from r/m64.
+            87 /r       XCHG r32, r/m32     RM  V/V     Exchange doubleword from r/m32 with r32.
+    REX.W + 87 /r       XCHG r64, r/m64     RM  V/N.E.  Exchange quadword from r/m64 with r64.
+
+    类型    操作数1             操作数2         操作数3     操作数4
+    O       AX/EAX/RAX (r,w)    opcode+rd (r,w)  无         无
+    O       opcode+rd (r,w)     AX/EAX/RAX (r,w) 无         无
+    MR      ModRM:r/m (r,w)     ModRM:reg (r)    无         无
+    RM      ModRM:reg (w)       ModRM:r/m (r)    无         无
+
+**操作**
+
+该指令的操作如下： ::
+
+    TEMP := DEST;
+    DEST := SRC;
+    SRC := TEMP;
+
+**标志位**
+
+不影响标志位。
+
+XADD
+------
+
+交换并相加： ::
+
+    操作码              指令             操作数  模式    简要描述
+            0F C0 /r    XADD r/m8, r8       MR  V/V     Exchange r8 and r/m8; load sum into r/m8.
+      REX + 0F C0 /r    XADD r/m8*, r8*     MR  V/N.E.  Exchange r8 and r/m8; load sum into r/m8.
+            0F C1 /r    XADD r/m16, r16     MR  V/V     Exchange r16 and r/m16; load sum into r/m16.
+            0F C1 /r    XADD r/m32, r32     MR  V/V     Exchange r32 and r/m32; load sum into r/m32.
+    REX.W + 0F C1 /r    XADD r/m64, r64     MR  V/N.E.  Exchange r64 and r/m64; load sum into r/m64.
+
+    类型    操作数1             操作数2         操作数3     操作数4
+    MR      ModRM:r/m (r,w)     ModRM:reg (r,w)  无         无
+
+**操作**
+
+该指令的操作如下： ::
+
+    TEMP := SRC + DEST;
+    SRC := DEST;
+    DEST := TEMP;
+
+**标志位**
+
+根据结果会设置 CF PF AF SF ZF OF 标志位。
+
+BSWAP
+------
+
+字节交换： ::
+
+    操作码              指令             操作数  模式    简要描述
+            0F C8+rd    BSWAP r32           O   V*/V    Reverses the byte order of a 32-bit register.
+    REX.W + 0F C8+rd    BSWAP r64           O   V/N.E.  Reverses the byte order of a 64-bit register.
+
+    * BSWAP 在 Intel486 系列之前的处理器不支持
+
+    类型    操作数1             操作数2         操作数3     操作数4
+    O       opcode+rd (r,w)     无              无          无
+
+**标志位**
+
+不影响标志位。
+
+CMPXCHG
+--------
+
+比较交换： ::
+
+    操作码              指令             操作数  模式    简要描述
+            0F B0 /r    CMPXCHG r/m8, r8    MR  V/V*    比较 AL r/m8，相等置 ZF r8 => r/m8，否则清 ZF r/m8 => AL
+      REX + 0F B0 /r    CMPXCHG r/m8*, r8   MR  V/N.E.  比较 AL r/m8，相等置 ZF r8 => /m8，否则清 ZF r/m8 => AL
+            0F B1 /r    CMPXCHG r/m16, r16  MR  V/V*    比较 AX r/m16，相等置 ZF r16 => r/m16，否则清 ZF r/m16 => AX
+            0F B1 /r    CMPXCHG r/m32, r32  MR  V/V*    比较 EAX r/m32，相等置 ZF r32 => r/m32，否则清 ZF r/m32 => EAX
+    REX.W + 0F B1 /r    CMPXCHG r/m64, r64  MR  V/N.E.  比较 RAX r/m64，相等置 ZF r64 => r/m64，否则清 ZF r/m64 => RAX
+            0F C7 /1    CMPXCHG8B m64       M   V/V*    比较 EDX:EAX m64，相等置 ZF ECX:EBX => m64，否则清 ZF m64 => EDX:EAX
+    REX.W + 0F C7 /1    CMPXCHG16B m128     M   V/N.E.  比较 RDX:RAX m128，相等置 ZF RCX:RBX => m128，否则清 ZF m128 => RDX:RAX
+
+    类型    操作数1             操作数2         操作数3     操作数4
+    MR      ModRM:r/m (r,w)     ModRM:reg (r)   无          无
+    M       ModRM:r/m (r,w)     无              无          无
+
+CBW
+-----
+
+字节到字： ::
+
+    操作码              指令             操作数  模式    简要描述
+            98          CBW                 ZO  V/V     AX := AL 符号扩展
+            98          CWDE                ZO  V/V     EAX := AX 符号扩展
+    REX.W + 98          CDQE                ZO  V/N.E.  RAX := EAX 符号扩展
+
+    类型    操作数1             操作数2         操作数3     操作数4
+    ZO      无                  无              无          无
+
+**操作**
+
+该指令对应的操作： ::
+
+    if OperandSize = 16 **CBW** {
+        AX := SignExtend(AL)
+    } else if OperandSize = 32 **CWDE** {
+        EAX := SignExtend(AX)
+    } else 64-bit Mode OperandSize = 64 **CDQE** {
+        RAX := SignExtend(EAX)
+    }
+
+**标志位**
+
+不影响标志位。
+
+CWD
+-----
+
+字到双字： ::
+
+    操作码              指令             操作数  模式    简要描述
+            99          CWD                 ZO  V/V     DX:AX := AX 符号扩展
+            99          CDQ                 ZO  V/V     EDX:EAX := EAX 符号扩展
+    REX.W + 99          CQO                 ZO  V/N.E.  RDX:RAX:= RAX 符号扩展
+
+    类型    操作数1             操作数2         操作数3     操作数4
+    ZO      无                  无              无          无
+
+**操作**
+
+该指令对应的操作： ::
+
+    if OperandSize = 16 **CWD** {
+        DX := SignExtend(AX)
+    } else if OperandSize = 32 **CDQ** {
+        EDX := SignExtend(EAX)
+    } else if 64-bit Mode and OperandSize = 64 **CQO** {
+        RDX := SignExtend(RAX)
+    }
+
+**标志位**
+
+不影响标志位。
 
 栈操作指令
 ==========
@@ -381,21 +560,6 @@ POPF/POPFD 对 EFLAGS 寄存器的影响： ::
     * N - 值不变
     * 0 - 值被清0
 
-类型转换指令
-============
-
-CBW 字节到字
-------------
-
-CWD 字到双字
-------------
-
-CWDE 字到双字扩展
------------------
-
-CDQ 字到四字
-------------
-
 段寄存器指令
 ============
 
@@ -413,4 +577,3 @@ LGS 用GS加载长指针
 
 LSS 用SS加载长指针
 ------------------
-

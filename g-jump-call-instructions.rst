@@ -325,7 +325,7 @@ CMP
     CMP (38H)   (39H)   (3AH)   (3BH)   (3CH)   (3DH)
         Eb,Gb   Ev,Gv   Gb,Eb   Gv,Ev   AL,Ib   rAX,Iz
 
-    GMP (80H) mm 111 r/m
+    CMP (80H) mm 111 r/m
         Eb,Ib
         (81H) mm 111 r/m
         Ev,Iz
@@ -509,7 +509,120 @@ SETcc
 CMOVcc
 -------
 
-条件移动
+条件移动： ::
+
+    操作码              指令             操作数  模式    简要描述
+            0F 40 /r    CMOVO r16, r/m16    RM  V/V     移动如果溢出 OF=1
+            0F 40 /r    CMOVO r32, r/m32    RM  V/V     移动如果溢出 OF=1
+    REX.W + 0F 40 /r    CMOVO r64, r/m64    RM  V/N.E.  移动如果溢出 OF=1
+            0F 41 /r    CMOVNO r16, r/m16   RM  V/V     移动如果不溢出 OF=0
+            0F 41 /r    CMOVNO r32, r/m32   RM  V/V     移动如果不溢出 OF=0
+    REX.W + 0F 41 /r    CMOVNO r64, r/m64   RM  V/N.E.  移动如果不溢出 OF=0
+            0F 42 /r    CMOVB r16, r/m16    RM  V/V     移动如果低于 CF=1
+            0F 42 /r    CMOVB r32, r/m32    RM  V/V     移动如果低于 CF=1
+    REX.W + 0F 42 /r    CMOVB r64, r/m64    RM  V/N.E.  移动如果低于 CF=1
+            0F 42 /r    CMOVC r16, r/m16    RM  V/V     移动如果进位 CF=1
+            0F 42 /r    CMOVC r32, r/m32    RM  V/V     移动如果进位 CF=1
+    REX.W + 0F 42 /r    CMOVC r64, r/m64    RM  V/N.E.  移动如果进位 CF=1
+            0F 42 /r    CMOVNAE r16, r/m16  RM  V/V     移动如果不高于等于 CF=1
+            0F 42 /r    CMOVNAE r32, r/m32  RM  V/V     移动如果不高于等于 CF=1
+    REX.W + 0F 42 /r    CMOVNAE r64, r/m64  RM  V/N.E.  移动如果不高于等于 CF=1
+            0F 43 /r    CMOVNB r16, r/m16   RM  V/V     移动如果不低于 CF=0
+            0F 43 /r    CMOVNB r32, r/m32   RM  V/V     移动如果不低于 CF=0
+    REX.W + 0F 43 /r    CMOVNB r64, r/m64   RM  V/N.E.  移动如果不低于 CF=0
+            0F 43 /r    CMOVAE r16, r/m16   RM  V/V     移动如果高于等于 CF=0
+            0F 43 /r    CMOVAE r32, r/m32   RM  V/V     移动如果高于等于 CF=0
+    REX.W + 0F 43 /r    CMOVAE r64, r/m64   RM  V/N.E.  移动如果高于等于 CF=0
+            0F 43 /r    CMOVNC r16, r/m16   RM  V/V     移动如果不进位 CF=0
+            0F 43 /r    CMOVNC r32, r/m32   RM  V/V     移动如果不进位 CF=0
+    REX.W + 0F 43 /r    CMOVNC r64, r/m64   RM  V/N.E.  移动如果不进位 CF=0
+            0F 44 /r    CMOVE r16, r/m16    RM  V/V     移动如果等于 ZF=1
+            0F 44 /r    CMOVE r32, r/m32    RM  V/V     移动如果等于 ZF=1
+    REX.W + 0F 44 /r    CMOVE r64, r/m64    RM  V/N.E.  移动如果等于 ZF=1
+            0F 44 /r    CMOVZ r16, r/m16    RM  V/V     移动如果是零 ZF=1
+            0F 44 /r    CMOVZ r32, r/m32    RM  V/V     移动如果是零 ZF=1
+    REX.W + 0F 44 /r    CMOVZ r64, r/m64    RM  V/N.E.  移动如果是零 ZF=1
+            0F 45 /r    CMOVNE r16, r/m16   RM  V/V     移动如果不等于 ZF=0
+            0F 45 /r    CMOVNE r32, r/m32   RM  V/V     移动如果不等于 ZF=0
+    REX.W + 0F 45 /r    CMOVNE r64, r/m64   RM  V/N.E.  移动如果不等于 ZF=0
+            0F 45 /r    CMOVNZ r16, r/m16   RM  V/V     移动如果不是零 ZF=0
+            0F 45 /r    CMOVNZ r32, r/m32   RM  V/V     移动如果不是零 ZF=0
+    REX.W + 0F 45 /r    CMOVNZ r64, r/m64   RM  V/N.E.  移动如果不是零 ZF=0
+            0F 46 /r    CMOVBE r16, r/m16   RM  V/V     移动如果低于等于 CF=1 或 ZF=1
+            0F 46 /r    CMOVBE r32, r/m32   RM  V/V     移动如果低于等于 CF=1 或 ZF=1
+    REX.W + 0F 46 /r    CMOVBE r64, r/m64   RM  V/N.E.  移动如果低于等于 CF=1 或 ZF=1
+            0F 46 /r    CMOVNA r16, r/m16   RM  V/V     移动如果不高于 CF=1 或 ZF=1
+            0F 46 /r    CMOVNA r32, r/m32   RM  V/V     移动如果不高于 CF=1 或 ZF=1
+    REX.W + 0F 46 /r    CMOVNA r64, r/m64   RM  V/N.E.  移动如果不高于 CF=1 或 ZF=1
+            0F 47 /r    CMOVA r16, r/m16    RM  V/V     移动如果高于 CF=0 ZF=0
+            0F 47 /r    CMOVA r32, r/m32    RM  V/V     移动如果高于 CF=0 ZF=0
+    REX.W + 0F 47 /r    CMOVA r64, r/m64    RM  V/N.E.  移动如果高于 CF=0 ZF=0
+            0F 47 /r    CMOVNBE r16, r/m16  RM  V/V     移动如果不低于等于 CF=0 ZF=0
+            0F 47 /r    CMOVNBE r32, r/m32  RM  V/V     移动如果不低于等于 CF=0 ZF=0
+    REX.W + 0F 47 /r    CMOVNBE r64, r/m64  RM  V/N.E.  移动如果不低于等于 CF=0 ZF=0
+            0F 48 /r    CMOVS r16, r/m16    RM  V/V     移动如果有符号位 SF=1
+            0F 48 /r    CMOVS r32, r/m32    RM  V/V     移动如果有符号位 SF=1
+    REX.W + 0F 48 /r    CMOVS r64, r/m64    RM  V/N.E.  移动如果有符号位 SF=1
+            0F 49 /r    CMOVNS r16, r/m16   RM  V/V     移动如果没有符号 SF=0
+            0F 49 /r    CMOVNS r32, r/m32   RM  V/V     移动如果没有符号 SF=0
+    REX.W + 0F 49 /r    CMOVNS r64, r/m64   RM  V/N.E.  移动如果没有符号 SF=0
+            0F 4A /r    CMOVP r16, r/m16    RM  V/V     移动如果是偶数个1 PF=1
+            0F 4A /r    CMOVP r32, r/m32    RM  V/V     移动如果是偶数个1 PF=1
+    REX.W + 0F 4A /r    CMOVP r64, r/m64    RM  V/N.E.  移动如果是偶数个1 PF=1
+            0F 4A /r    CMOVPE r16, r/m16   RM  V/V     移动如果是偶数个1 PF=1
+            0F 4A /r    CMOVPE r32, r/m32   RM  V/V     移动如果是偶数个1 PF=1
+    REX.W + 0F 4A /r    CMOVPE r64, r/m64   RM  V/N.E.  移动如果是偶数个1 PF=1
+            0F 4B /r    CMOVNP r16, r/m16   RM  V/V     移动如果不是偶数个1 PF=0
+            0F 4B /r    CMOVNP r32, r/m32   RM  V/V     移动如果不是偶数个1 PF=0
+    REX.W + 0F 4B /r    CMOVNP r64, r/m64   RM  V/N.E.  移动如果不是偶数个1 PF=0
+            0F 4B /r    CMOVPO r16, r/m16   RM  V/V     移动如果不是偶数个1 PF=0
+            0F 4B /r    CMOVPO r32, r/m32   RM  V/V     移动如果不是偶数个1 PF=0
+    REX.W + 0F 4B /r    CMOVPO r64, r/m64   RM  V/N.E.  移动如果不是偶数个1 PF=0
+            0F 4C /r    CMOVL r16, r/m16    RM  V/V     移动如果小于 SF≠OF
+            0F 4C /r    CMOVL r32, r/m32    RM  V/V     移动如果小于 SF≠OF
+    REX.W + 0F 4C /r    CMOVL r64, r/m64    RM  V/N.E.  移动如果小于 SF≠OF
+            0F 4C /r    CMOVNGE r16, r/m16  RM  V/V     移动如果不大于等于 SF≠OF
+            0F 4C /r    CMOVNGE r32, r/m32  RM  V/V     移动如果不大于等于 SF≠OF
+    REX.W + 0F 4C /r    CMOVNGE r64, r/m64  RM  V/N.E.  移动如果不大于等于 SF≠OF
+            0F 4D /r    CMOVGE r16, r/m16   RM  V/V     移动如果大于等于 SF=OF
+            0F 4D /r    CMOVGE r32, r/m32   RM  V/V     移动如果大于等于 SF=OF
+    REX.W + 0F 4D /r    CMOVGE r64, r/m64   RM  V/N.E.  移动如果大于等于 SF=OF
+            0F 4D /r    CMOVNL r16, r/m16   RM  V/V     移动如果不小于 SF=OF
+            0F 4D /r    CMOVNL r32, r/m32   RM  V/V     移动如果不小于 SF=OF
+    REX.W + 0F 4D /r    CMOVNL r64, r/m64   RM  V/N.E.  移动如果不小于 SF=OF
+            0F 4E /r    CMOVLE r16, r/m16   RM  V/V     移动如果小于等于 ZF=1 或 SF≠OF
+            0F 4E /r    CMOVLE r32, r/m32   RM  V/V     移动如果小于等于 ZF=1 或 SF≠OF
+    REX.W + 0F 4E /r    CMOVLE r64, r/m64   RM  V/N.E.  移动如果小于等于 ZF=1 或 SF≠OF
+            0F 4E /r    CMOVNG r16, r/m16   RM  V/V     移动如果不大于 ZF=1 或 SF≠OF
+            0F 4E /r    CMOVNG r32, r/m32   RM  V/V     移动如果不大于 ZF=1 或 SF≠OF
+    REX.W + 0F 4E /r    CMOVNG r64, r/m64   RM  V/N.E.  移动如果不大于 ZF=1 或 SF≠OF
+            0F 4F /r    CMOVG r16, r/m16    RM  V/V     移动如果大于 ZF=0 SF=OF
+            0F 4F /r    CMOVG r32, r/m32    RM  V/V     移动如果大于 ZF=0 SF=OF
+    REX.W + 0F 4F /r    CMOVG r64, r/m64    RM  V/N.E.  移动如果大于 ZF=0 SF=OF
+            0F 4F /r    CMOVNLE r16, r/m16  RM  V/V     移动如果不小于等于 ZF=0 SF=OF
+            0F 4F /r    CMOVNLE r32, r/m32  RM  V/V     移动如果不小于等于 ZF=0 SF=OF
+    REX.W + 0F 4F /r    CMOVNLE r64, r/m64  RM  V/N.E.  移动如果不小于等于 ZF=0 SF=OF
+
+    * 高于/低于 用于无符号整数
+    * 大于/小于 用于有符号整数
+
+    类型    操作数1             操作数2         操作数3     操作数4
+    RM      ModRM:reg (r, w)    ModRM:r/m (r)   无          无
+
+**操作**
+
+该指令的操作如下： ::
+
+    temp := SRC
+    if cc {
+        DEST := temp;
+    } else if OperandSize = 32 and IA-32e mode active {
+        DEST[63:32] := 0;
+    }
+
+**标志位**
+
+不影响标志位。
 
 过程调用指令
 ============
@@ -540,7 +653,7 @@ CALL
     M       ModRM:r/m (r)       无              无          无
 
     CALL 调用（非64位模式）
-    段内直接调用                            1110 1000 : signed full disp
+    段内直接调用                            1110 1000 : 有符号偏移
     段内间接调用                            1111 1111 : 11 010 reg
     段内间接调用                            1111 1111 : mm 010 mem
     跨段直接调用                            1001 1010 : 选择器+无符号偏移
