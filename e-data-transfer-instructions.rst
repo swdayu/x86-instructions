@@ -101,15 +101,29 @@ MOV
     MOV (A0H)   (A1H)   (A2H)   (A3H)
         AL,Ob  rAX,Ov   Ob,AL   Ov,rAX
 
-    MOV (B0H~B7H)
-          r8,Ib
-        (B8H~BFH)
-          reg,Iv
+    MOV (B0H)   (B1H)   (B2H)   (B3H)   (B4H)   (B5H)   (B6H)   (B7H)
+      AL/R8B,Ib CL/R9B DL/R10B BL/R11B AH/R12B CH/R13B DH/R14B BH/R15B
+        (B8H)   (B9H)   (BAH)   (BBH)   (BCH)   (BDH)   (BEH)   (BFH)
+      rAX/r8,Iv rCX/r9 rDX/r10 rBX/r11 rSP/r12 rBP/r13 rSI/r14 rDI/r15
 
     MOV (C6H) mm 000 r/m imm8
         Eb,Ib
         (C7H) mm 000 r/m immz
         Ev,Iz
+
+    * Eb 操作数大小是字节，位于r/m字段，是寄存器或内存数据
+    * Ew 操作数大小是双字节，位于r/m字段，是寄存器或内存数据
+    * Ev 操作数大小根据属性决定，位于r/m字段，是寄存器或内存数据
+    * Gb 操作数大小是字节，位于reg字段，是一个寄存器
+    * Gv 操作数大小根据属性决定，位于reg字段，是一个寄存器
+    * Sw 操作数大小是双字节，ModR/M 的 reg 字段选择一个段寄存器
+    * Ob 操作数大小是字节，不使用ModR/M字段，位于偏移量字段
+    * Ov 操作数大小根据属性决定，不使用ModR/M字段，位于偏移量字段
+    * Ib 操作数大小是字节，位于立即数字段
+    * Iv 操作数大小根据属性决定，是两字节或四字节或八字节，位于立即数字段
+    * Iz 操作数大小根据属性决定，是两个字节（16位）或四个字节（32/64位），位于立即数字段
+    * AL/R8B 操作数大小是字节，不使用ModR/M字段，规定为对应寄存器
+    * rAX/r8 操作数大小根据属性决定，不使用ModR/M字段，规定为对应寄存器
 
 **操作**
 
@@ -146,6 +160,9 @@ LEA
                 [8D]   mm reg mem   [00~BF]         m32 EA => r32
        [40~47]  [8D]   mm reg mem   [00~BF]         m32 EA => REX.r32
        [48~4F]  [8D]   mm reg mem   [00~BF]         m64 EA => REX.r64
+
+    * Gv 操作数大小根据属性决定，位于reg字段，是一个寄存器
+    * M  ModR/M 字节只能引用内存
 
 **操作**
 
@@ -195,6 +212,11 @@ MOVSX
     MOVSX (BEH)   (BFH)
           Ev,Eb   Gv,Ew
 
+    * Eb 操作数大小是字节，位于r/m字段，是寄存器或内存数据
+    * Ew 操作数大小是双字节，位于r/m字段，是寄存器或内存数据
+    * Ev 操作数大小根据属性决定，位于r/m字段，是寄存器或内存数据
+    * Gv 操作数大小根据属性决定，位于reg字段，是一个寄存器
+
 **操作**
 
 DEST := SignExtend(SRC);
@@ -231,6 +253,10 @@ MOVZX
 
     MOVZX (B6H)   (B7H)
           Gv,Eb   Gv,Ew
+
+    * Eb 操作数大小是字节，位于r/m字段，是寄存器或内存数据
+    * Ew 操作数大小是双字节，位于r/m字段，是寄存器或内存数据
+    * Gv 操作数大小根据属性决定，位于reg字段，是一个寄存器
 
 **操作**
 
@@ -270,6 +296,11 @@ MOVBE
     MOVBE   (F0H)   (F1H)
             Gy,My   My,Gy
         66  Gw,Mw   Mw,Gw
+
+    * Gw 操作数大小是双字节，位于reg字段，是一个寄存器
+    * Gy 操作数大小是四字节或八字节（64位模式），位于reg字段，是一个寄存器
+    * Mw 操作数大小是双字节，ModR/M 字节只能引用内存
+    * My 操作数大小是四字节或八字节（64位模式），ModR/M 字节只能引用内存
 
 **标志位**
 
@@ -315,6 +346,13 @@ XCHG
     XCHG (90H)   (91H)   (92H)   (93H)   (94H)   (95H)   (96H)   (97H)
          r8,rAX  rCX/r9  rDX/r10 rBX/r11 rSP/r12 rBP/r13 rSI/r14 rDI/r15
 
+    * Eb 操作数大小是字节，位于r/m字段，是寄存器或内存数据
+    * Ev 操作数大小根据属性决定，位于r/m字段，是寄存器或内存数据
+    * Gb 操作数大小是字节，位于reg字段，是一个寄存器
+    * Gv 操作数大小根据属性决定，位于reg字段，是一个寄存器
+    * r8 rCX/r9 操作数大小根据属性决定，不使用ModR/M字段，规定为对应寄存器
+    * rAX 操作数大小根据属性决定，不使用ModR/M字段，规定为对应寄存器
+
 **操作**
 
 该指令的操作如下： ::
@@ -357,6 +395,11 @@ XADD
     XADD (C0H)  (C1H)
          Eb,Gb  Ev,Gv
 
+    * Eb 操作数大小是字节，位于r/m字段，是寄存器或内存数据
+    * Ev 操作数大小根据属性决定，位于r/m字段，是寄存器或内存数据
+    * Gb 操作数大小是字节，位于reg字段，是一个寄存器
+    * Gv 操作数大小根据属性决定，位于reg字段，是一个寄存器
+
 **操作**
 
 该指令的操作如下： ::
@@ -391,6 +434,8 @@ BSWAP
           RAX/EAX/R8/R8D      RCX/ECX/R9/R9D      RDX/EDX/R10/R10D    RBX/EBX/R11/R11D
           (CCH)               (CDH)               (CEH)               (CFH)
           RSP/ESP/R12/R12D    RBP/EBP/R13/R13D    RSI/ESI/R14/R14D    RDI/EDI/R15/R15D
+
+    * RAX/EAX/R8/R8D 操作数大小根据属性决定，不使用ModR/M字段，规定为对应寄存器
 
 **标志位**
 
@@ -440,6 +485,13 @@ CMPXCHG
     CMPXCHG16B (C7H) mm 001 mem
                 Mdq
 
+    * Eb 操作数大小是字节，位于r/m字段，是寄存器或内存数据
+    * Ev 操作数大小根据属性决定，位于r/m字段，是寄存器或内存数据
+    * Gb 操作数大小是字节，位于reg字段，是一个寄存器
+    * Gv 操作数大小根据属性决定，位于reg字段，是一个寄存器
+    * Mq 操作数大小是八字节，ModR/M 字节只能引用内存
+    * Mdq 操作数大小是双八字节，ModR/M 字节只能引用内存
+
 **标志位**
 
 根据比较结果会设置 ZF CF PF AF SF OF 标志位。
@@ -465,7 +517,6 @@ CBW
         0100 1000 : 1001 1000
 
     CBW/CWDE/CDQE (98H)
-                   Ap
 
 **操作**
 
@@ -504,7 +555,6 @@ CWD
         0100 1000 : 1001 1001
 
     CWD/CDQ/CQO (98H)
-                 Ap
 
 **操作**
 
