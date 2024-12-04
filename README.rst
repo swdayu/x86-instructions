@@ -7,6 +7,7 @@ x86 指令集文档
 5. `数据传输指令 <e-data-transfer-instructions.rst>`_
 6. `跳转调用指令 <f-jump-call-instructions.rst>`_
 7. `算术运算指令 <g-arithmetic-instructions.rst>`_
+8. `其他通用指令 <h-other-general-instructions.rst>`_
 
 参考链接
 
