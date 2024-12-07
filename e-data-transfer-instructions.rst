@@ -1,6 +1,108 @@
 数据移动和交换
 ==============
 
+LEA
+-----
+
+加载地址： ::
+
+    操作码              指令             操作数  模式    简要描述
+            8D /r       LEA r16,m           RM  V/V     m的有效地址 => r16
+            8D /r       LEA r32,m           RM  V/V     m的有效地址 => r32
+    REX.W + 8D /r       LEA r64,m           RM  V/N.E.  m的有效地址 => r64
+
+    * /r ModR/M字段包含reg寄存器操作数和r/m操作数
+    * ↑A ModR/M中mod字段的值 11B 是保留的
+
+    类型    操作数1             操作数2         操作数3     操作数4
+    RM      ModRM:reg (w)       ModRM:r/m (r)   无          无
+
+    LEA 加载地址
+    => reg                              1000 1101 : mod↑A reg mem
+    => r16/r32              0100 0RXB : 1000 1101 : mod↑A reg mem
+    => r64                  0100 1RXB : 1000 1101 : mod↑A r64 mem
+
+    LEA (8DH)   源头操作数大小根据属性决定，位于r/m字段，只能引用内存
+        Gv,M    目的操作数大小根据属性决定，位于reg字段，是一个寄存器
+    [0100WRXB] opcode [mm reg r/m]
+                [8D]   mm reg mem   [00~BF]         m32 EA => r32
+       [40~47]  [8D]   mm reg mem   [00~BF]         m32 EA => REX.r32
+       [48~4F]  [8D]   mm reg mem   [00~BF]         m64 EA => REX.r64
+
+    * Gv 操作数大小根据属性决定，位于reg字段，是一个寄存器
+    * M  ModR/M 字节只能引用内存
+
+**操作**
+
+加载有效地址（load effective address）。
+
+**标志位**
+
+不影响标志位。
+
+LODS
+-----
+
+加载字符串
+
+STOS
+-----
+
+保存字符串
+
+SCAS
+-----
+
+字符串扫描
+
+MOVS
+-----
+
+字符串移动： ::
+
+    操作码              指令             操作数  模式    简要描述
+            A4          MOVS m8, m8         ZO  V/V     单字节移动 DS:ESI => ES:EDI，64位模式 R/ESI => R/EDI
+            A5          MOVS m16, m16       ZO  V/V     双字节移动 DS:ESI => ES:EDI，64位模式 R/ESI => R/EDI
+            A5          MOVS m32, m32       ZO  V/V     四字节移动 DS:ESI => ES:EDI，64位模式 R/ESI => R/EDI
+    REX.W + A5          MOVS m64, m64       ZO  V/N.E.  八字节移动 R/ESI => R/EDI
+            A4          MOVSB               ZO  V/V     单字节移动 DS:ESI => ES:EDI，64位模式 R/ESI => R/EDI
+            A5          MOVSW               ZO  V/V     双字节移动 DS:ESI => ES:EDI，64位模式 R/ESI => R/EDI
+            A5          MOVSD               ZO  V/V     四字节移动 DS:ESI => ES:EDI，64位模式 R/ESI => R/EDI
+    REX.W + A5          MOVSQ               ZO  V/N.E.  八字节移动 R/ESI => R/EDI
+
+    类型    操作数1             操作数2         操作数3     操作数4
+    ZO      无                  无              无          无
+
+    MOVS 字符串移动
+                1010 010w
+    0100 1000 : 1010 0101
+
+    MOVS/MOVSB (A4H)
+        Yb,Xb
+
+    MOVS/MOVSW/MOVSD/MOVSQ (A5H)
+        Yv,Xv
+
+    * Xb 操作数大小是字节，通过 DS:rSI 寄存器进行内存寻址
+    * Xv 操作数大小根据属性决定，通过 DS:rSI 寄存器进行内存寻址
+    * Yb 操作数大小是字节，通过 ES:rDI 寄存器进行内存寻址
+    * Yv 操作数大小根据属性决定，通过 ES:rDI 寄存器进行内存寻址
+
+**操作**
+
+将 rSI 指定的内存内容移动到 rDI 指定的内存位置，在移动操作之后，rSI 和 rDI 寄存器会根
+据 EFLAGS 寄存器中的 DF 标志的设置自动增加或减少。如果 DF 标志为 0 则增加，如果 DF 标
+志为 1 则减少。对于字节操作，寄存器增加或减少 1；对于字操作，增加或减少 2；对于双字操作，
+增加或减少 4。MOVS、MOVSB、MOVSW 和 MOVSD 指令可以使用 REP 前缀，可以移动 ECX 个字节、
+字或双字的数据块。
+
+为了提高性能，处理器支持在 MOVS 和 MOVSB 移动字符串期间修改处理器操作。有关快速字符串操
+作的详细信息，参考卷 1 第 7.3.9.3 节，以及卷 3 第 9.2.4 节快速字符串操作和无序存储。
+
+**标志位**
+
+不影响标志位。
+
 MOV 
 ----
 
@@ -128,45 +230,6 @@ MOV
 **操作**
 
 DEST := SRC;
-
-**标志位**
-
-不影响标志位。
-
-LEA
------
-
-加载地址： ::
-
-    操作码              指令             操作数  模式    简要描述
-            8D /r       LEA r16,m           RM  V/V     m的有效地址 => r16
-            8D /r       LEA r32,m           RM  V/V     m的有效地址 => r32
-    REX.W + 8D /r       LEA r64,m           RM  V/N.E.  m的有效地址 => r64
-
-    * /r ModR/M字段包含reg寄存器操作数和r/m操作数
-    * ↑A ModR/M中mod字段的值 11B 是保留的
-
-    类型    操作数1             操作数2         操作数3     操作数4
-    RM      ModRM:reg (w)       ModRM:r/m (r)   无          无
-
-    LEA 加载地址
-    => reg                              1000 1101 : mod↑A reg mem
-    => r16/r32              0100 0RXB : 1000 1101 : mod↑A reg mem
-    => r64                  0100 1RXB : 1000 1101 : mod↑A r64 mem
-
-    LEA (8DH)   源头操作数大小根据属性决定，位于r/m字段，只能引用内存
-        Gv,M    目的操作数大小根据属性决定，位于reg字段，是一个寄存器
-    [0100WRXB] opcode [mm reg r/m]
-                [8D]   mm reg mem   [00~BF]         m32 EA => r32
-       [40~47]  [8D]   mm reg mem   [00~BF]         m32 EA => REX.r32
-       [48~4F]  [8D]   mm reg mem   [00~BF]         m64 EA => REX.r64
-
-    * Gv 操作数大小根据属性决定，位于reg字段，是一个寄存器
-    * M  ModR/M 字节只能引用内存
-
-**操作**
-
-加载有效地址（load effective address）。
 
 **标志位**
 

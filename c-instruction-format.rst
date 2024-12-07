@@ -292,14 +292,14 @@ ModR/M 字节的值（以十六进制表示）。ModR/M 字节对应的值示例
     [EBP]+disp8            101      45   4D   55   5D   65   6D   75   7D
     [ESI]+disp8            110      46   4E   56   5E   66   6E   76   7E
     [EDI]+disp8            111      47   4F   57   5F   67   6F   77   7F
-    [EAX]+disp16       10  000      80   88   90   98   A0   A8   B0   B8
-    [ECX]+disp16           001      81   89   91   99   A1   A9   B1   B9
-    [EDX]+disp16           010      82   8A   92   9A   A2   AA   B2   BA
-    [EBX]+disp16           011      83   8B   93   9B   A3   AB   B3   BB
-    [-][-]+disp16          100      84   8C   94   9C   A4   AC   B4   BC
-    [EBP]+disp16           101      85   8D   95   9D   A5   AD   B5   BD
-    [ESI]+disp16           110      86   8E   96   9E   A6   AE   B6   BE
-    [EDI]+disp16           111      87   8F   97   9F   A7   AF   B7   BF
+    [EAX]+disp32       10  000      80   88   90   98   A0   A8   B0   B8
+    [ECX]+disp32           001      81   89   91   99   A1   A9   B1   B9
+    [EDX]+disp32           010      82   8A   92   9A   A2   AA   B2   BA
+    [EBX]+disp32           011      83   8B   93   9B   A3   AB   B3   BB
+    [-][-]+disp32          100      84   8C   94   9C   A4   AC   B4   BC
+    [EBP]+disp32           101      85   8D   95   9D   A5   AD   B5   BD
+    [ESI]+disp32           110      86   8E   96   9E   A6   AE   B6   BE
+    [EDI]+disp32           111      87   8F   97   9F   A7   AF   B7   BF
     EAX/AX/AL/MM0/XMM0 11  000      C0   C8   D0   D8   E0   E8   F0   F8
     ECX/CX/CL/MM1/XMM1     001      C1   C9   D1   D9   E1   E9   F1   F9
     EDX/DX/DL/MM2/XMM2     010      C2   CA   D2   DA   E2   EA   F2   FA
@@ -1434,13 +1434,13 @@ SIMD浮点异常说明
      00reg100  ssxxxyyy     [BSEr32+IDXr32*ss]          [BSEr64+IDXr64*ss]
      01reg100  ss100bse     disp8[BSEr32]               disp8[BSEr64]
      01reg100  ssxxxbse     disp8[BSEr32+IDXr32*ss]     disp8[BSEr64+IDXr64*ss]
-     10reg100  ss100bse     disp16[BSEr32]              disp16[BSEr64]
-     10reg100  ssxxxbse     disp16[BSEr32+IDXr32*ss]    disp16[BSEr64+IDXr64*ss]
+     10reg100  ss100bse     disp32[BSEr32]              disp32[BSEr64]
+     10reg100  ssxxxbse     disp32[BSEr32+IDXr32*ss]    disp32[BSEr64+IDXr64*ss]
     [mmregreg]              兼容模式                    64位模式
      00reg101               [disp32]                    disp32[RIP]
      00regzzz               [Mod0r32]                   [Mod0r64]
      01regxxx               disp8[Mod1r32]              disp8[Mod1r64]
-     10regxxx               disp16[Mod1r32]             disp16[Mod1r64]
+     10regxxx               disp32[Mod1r32]             disp32[Mod1r64]
     * xxx - 除 100 之外的其他编码
     * yyy - 除 101 之外的其他编码
     * zzz - 除 100 和 101 之外的其他编码
@@ -1455,19 +1455,19 @@ SIMD浮点异常说明
      00reg100  ssXXX101 disp32  S4|SC W5|WD disp32  reg <-> disp32[IDXr32*ss]           W5不能是25 65 A5 E5
      00reg100  00100YYY         S4|SC 2Y            reg <-> [BSEr32]                    Y不能是5
      00reg100  ssXXXYYY         S4|SC ??            reg <-> [BSEr32+IDXr32*ss]          ??不能是?5 ?D，也不包括2|6|A|E0~7
-     00reg101  disp32           S5|SD disp32        reg <-> disp32[RIP]
+     00reg101  disp32           S5|SD disp32        reg <-> [disp32] 或 disp32[RIP]
      01reg000  disp8            4Z disp8            reg <-> disp8[Mod1r32]              Z不能是4 C
           011                   5Z disp8
           101                   6Z disp8
           111                   7Z disp8
      01reg100  00100bse disp8   T4|TC 20~27 disp8   reg <-> disp8[BSEr32]               T只能是4 5 6 7
-     01reg100  ssXXXbse disp8   T4|TC ?? disp16     reg <-> disp8[BSEr32+IDXr32*ss]     ??不包括20~27 60~67 A0~A7 E0~E7
-     10reg000  disp16           8Z disp16           reg <-> disp16[Mod1r32]
-          011                   9Z disp16
-          101                   AZ disp16
-          111                   BZ disp16
-     10reg100  00100bse disp16  U4|UC 20~27 disp16  reg <-> disp16[BSEr32]              U只能是8 9 A B
-     10reg100  ssXXXbse disp16  U4|UC ?? disp16     reg <-> disp16[BSEr32+IDXr32*ss]    ??不包括20~27 60~67 A0~A7 E0~E7
+     01reg100  ssXXXbse disp8   T4|TC ?? disp8      reg <-> disp8[BSEr32+IDXr32*ss]     ??不包括20~27 60~67 A0~A7 E0~E7
+     10reg000  disp32           8Z disp32           reg <-> disp32[Mod1r32]
+          011                   9Z disp32
+          101                   AZ disp32
+          111                   BZ disp32
+     10reg100  00100bse disp32  U4|UC 20~27 disp32  reg <-> disp32[BSEr32]              U只能是8 9 A B
+     10reg100  ssXXXbse disp32  U4|UC ?? disp32     reg <-> disp32[BSEr32+IDXr32*ss]    ??不包括20~27 60~67 A0~A7 E0~E7
 
 下表列出了某些指令中出现的特殊字段，有时出现在主要操作码内： ::
 

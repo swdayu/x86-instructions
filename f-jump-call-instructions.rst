@@ -352,6 +352,11 @@ CMP
 
 影响 CF OF SF ZF AF PF 标志位。
 
+CMPS
+-----
+
+字符串比较
+
 TEST
 -----
 
