@@ -369,7 +369,36 @@ MOVBE
 
 不影响标志位。
 
-XCHG 
+XLAT
+-----
+
+字节表查找： ::
+
+    操作码              指令             操作数  模式    简要描述
+            D7          XLAT m8             ZO  V/V     DS:[(E)BX + unsigned AL] => AL
+            D7          XLATB               ZO  V/V     DS:[(E)BX + unsigned AL] => AL
+    REX.W + D7          XLATB               ZO  V/N.E.  [RBX + unsigned AL] => AL
+
+    类型    操作数1             操作数2         操作数3     操作数4
+    ZO      无                  无              无          无
+
+**操作**
+
+该指令的操作如下： ::
+
+    if AddressSize = 16 {
+        AL := (DS:BX + ZeroExtend(AL));
+    } else if AddressSize = 32 {
+        AL := (DS:EBX + ZeroExtend(AL));
+    } else AddressSize = 64 {
+        AL := (RBX + ZeroExtend(AL));
+    }
+
+**标志位**
+
+不影响标志位。
+
+XCHG
 -----
 
 数据交换： ::
